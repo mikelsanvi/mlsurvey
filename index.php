@@ -180,7 +180,14 @@ $view->addHead ();
 				<div class="col-lg-6">
 					<div class="copyright">
 						<p>
-							<span>&copy; Target 2014 All right reserved. By </span><a href="http://webthemez.com" target="_blank">WebThemez</a>
+							<span>Powered by: <a href="https://github.com/pacoandres/mlsurvey" target="_blank">mlsurveys</a></span>
+						</p>
+						<p>
+							<span>Special thanks to: <a href="https://github.com/PHPMailer/PHPMailer" target="_blank">PHPMailer</a>
+						and <a href="https://github.com/hugerte/hugerte" target="_blank">HugeRTE</a></span>
+						</p>
+						<p>
+							<span>Original theme: &copy; Target 2014 All right reserved. By </span><a href="http://webthemez.com" target="_blank">WebThemez</a>
 						</p>
 					</div>
 				</div>

@@ -107,7 +107,7 @@ function isUser (){
     return false;    
 }
 
-function validateUser ($user, $passwd){
+function validateUser ($user, $passwd, $id = -1){
     startSession ();
     /*if (!isset($_SESSION['token']) || $_SESSION['token'] != $token){
         throw new Exception("Wrong security token", 1);
@@ -118,15 +118,21 @@ function validateUser ($user, $passwd){
         throw new Exception("Wrong security token", 1);
         return 1;
     }
-    if (isset($_SESSION['userid'])){
+    if (isset($_SESSION['userid']) && $id == -1){
         return 0;
     }
 
 
     try {
         $dbconn = dbConn ();
-        $query = $dbconn->prepare ("select * from {Users} where username = :usu LIMIT 1");
-        $query->bindParam (':usu', $user);
+        if ($id == -1){
+            $query = $dbconn->prepare ("select * from {Users} where username = :usu LIMIT 1");
+            $query->bindParam (':usu', $user, PDO::PARAM_STR);
+        }
+        else {
+            $query = $dbconn->prepare ("select * from {Users} where userid = :id LIMIT 1");
+            $query->bindParam (':id', $id, PDO::PARAM_INT);
+        }
         $query->execute ();
     }
     catch (Exception $e){
@@ -138,13 +144,16 @@ function validateUser ($user, $passwd){
         $row = $query->fetch ();
         if (isset ($row['passwd'])){
             $pass_crypt = $row['passwd'];
-            if ($pass_crypt == crypt($passwd, $pass_crypt)) {
-                $_SESSION['userid'] = $row['userid'];
-                if ($row['role'] != '')
-                    $_SESSION['admin'] = true;
-                else {
-                    unset ($_SESSION['admin']);
-                }                   
+            //if ($pass_crypt == crypt($passwd, $pass_crypt)) {
+            if (password_verify ($passwd, $pass_crypt)){
+                if ($id == -1){
+                    $_SESSION['userid'] = $row['userid'];
+                    if ($row['role'] != '')
+                        $_SESSION['admin'] = true;
+                    else {
+                        unset ($_SESSION['admin']);
+                    }              
+                }     
                 return 0;
             }
         }

@@ -260,7 +260,8 @@ header ul.nav li ul li ul {
   content:none;
 }
 .navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:hover, .navbar-default .navbar-nav>.active>a:focus {
-color: #37A691;  
+/*color: #37A691;  */
+color: #3c6f4e;
 /* background: #52C2AD; */
 /* border: 1px solid #3AA994 !important; */
 }
@@ -283,7 +284,8 @@ display: inline-block;
 #featured{
 	width: 100%;
 	/*background:#000;*/
-	background: #3BAE62;
+/*	background: #3BAE62;*/
+	background: #aaaaaa;
 	position:relative;
 	margin:0;
 	padding:0;
@@ -988,7 +990,8 @@ ul.link-list li{
 }
 footer{
 /*background: #046E5A;*/
-background: #3BAE62;
+/*background: #3BAE62;*/
+	background: #aaaaaa;
 }
 footer ul.link-list li a{
 	color:#fff;

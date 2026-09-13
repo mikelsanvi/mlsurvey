@@ -29,7 +29,8 @@
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     border-radius: 6px;
     font-weight: 600 !important;
-    color: rgb(49,164,88);
+    /*color: rgb(49,164,88);*/
+    color: #2c5f3e;
     font-size: 1.2em;
 }
 
