@@ -3,15 +3,18 @@ require_once 'utils/dbutils.php';
 require_once 'include/fileparams.php';
 class Results extends View {
 
+    /* Ranuras de la paleta categórica definida en css/results.css.
+       El orden importa: está validado para que dos opciones contiguas
+       sigan distinguiéndose con daltonismo. */
     private const RESULTS_COLORS = [
-        "magenta",
-        "green",
-        "brown",
-        "blue",
-        "red",
-        "greenyellow",
-        "orange",
-        "pink",
+        "s1",
+        "s2",
+        "s3",
+        "s4",
+        "s5",
+        "s6",
+        "s7",
+        "s8",
     ];
 
     public function loadStyles (){
@@ -101,7 +104,10 @@ class Results extends View {
                         $optionres = $resultsarray["Responses"][$questionid][$optionid];
                         $pctres = $optionres/$totalquestion;
                         $elid = "opt-" . $questionid . "-" . $optionid;
-                        $elclass = self::RESULTS_COLORS[$optionid%count (self::RESULTS_COLORS)];
+                        /* Las opciones empiezan en 1: se desplaza para que la
+                           primera reciba la ranura inicial de la paleta. */
+                        $slots = count (self::RESULTS_COLORS);
+                        $elclass = self::RESULTS_COLORS[($optionid + $slots - 1) % $slots];
                         ?>
                         <p>
                         <label for="<?= $elid; ?>"><?= $option['optiondesc'] ?>: <?= 

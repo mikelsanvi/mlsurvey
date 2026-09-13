@@ -1,0 +1,963 @@
+/* =====================================================================
+   mlsurvey · capa de interfaz
+   ---------------------------------------------------------------------
+   Se carga después de bootstrap y de style.css (la plantilla original)
+   y reescribe su cromo usando los tokens de theme.css.
+   ===================================================================== */
+
+/* ------------------------------------------------------------------
+   Base
+   ------------------------------------------------------------------ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    background-color: var(--ml-bg);
+    background-image: var(--ml-bg-grad);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: var(--ml-text);
+    font-family: var(--ml-font);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--ml-font);
+    color: var(--ml-text);
+    font-weight: 650;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    margin: 0 0 0.6em;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.5rem; }
+h3 { font-size: 1.25rem; }
+h4 { font-size: 1.0625rem; }
+h5 { font-size: 0.95rem; }
+h6 { font-size: 0.85rem; }
+
+p {
+    margin: 0 0 1em;
+}
+
+strong, b {
+    font-weight: 650;
+    color: var(--ml-text);
+}
+
+small {
+    color: var(--ml-text-muted);
+}
+
+hr {
+    border: 0;
+    border-top: 1px solid var(--ml-border);
+    margin: 24px 0;
+}
+
+a {
+    color: var(--ml-accent-text);
+    text-decoration: none;
+    transition: color var(--ml-transition);
+}
+
+a:hover,
+a:focus {
+    color: var(--ml-accent-hover);
+    text-decoration: underline;
+}
+
+/* Un foco visible y consistente en toda la aplicación. */
+:focus-visible {
+    outline: 2px solid var(--ml-accent);
+    outline-offset: 2px;
+    border-radius: var(--ml-radius-sm);
+}
+
+::selection {
+    background: var(--ml-accent-soft-hover);
+    color: var(--ml-text);
+}
+
+/* ------------------------------------------------------------------
+   Estructura de página
+   ------------------------------------------------------------------ */
+#wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.featured_content {
+    background: transparent;
+    padding: 40px 0 64px;
+    flex: 1 0 auto;
+}
+
+.featured_content .container,
+header .container,
+footer .container {
+    max-width: 1180px;
+    padding-inline: 24px;
+}
+
+.row,
+.row-fluid {
+    margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------------
+   Cabecera y navegación
+   ------------------------------------------------------------------ */
+header .navbar,
+header .navbar-default {
+    background: var(--ml-header-bg);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);
+    backdrop-filter: saturate(180%) blur(12px);
+    border: 0;
+    border-bottom: 1px solid var(--ml-header-border);
+    border-radius: 0;
+    margin-bottom: 0;
+    min-height: 64px;
+    padding: 0;
+}
+
+header .navbar .container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 64px;
+}
+
+.navbar-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    float: none;
+}
+
+.navbar-brand,
+.navbar-default .navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ml-text);
+    font-size: 1.0625rem;
+    font-weight: 680;
+    letter-spacing: -0.02em;
+    text-transform: none;
+    line-height: 1.2;
+    height: auto;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar-brand:hover,
+.navbar-default .navbar-brand:hover,
+.navbar-brand:focus {
+    color: var(--ml-accent-text);
+    text-decoration: none;
+}
+
+/* Marca de agua del logotipo mientras no haya uno real. */
+.ml-brand-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    flex: none;
+    border-radius: var(--ml-radius-sm);
+    background: linear-gradient(140deg, var(--ml-accent), var(--ml-accent-hover));
+    color: var(--ml-accent-contrast);
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    box-shadow: var(--ml-shadow-accent);
+}
+
+header .navbar-collapse {
+    border: 0;
+    box-shadow: none;
+    padding: 0;
+}
+
+header .navbar-collapse ul.navbar-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    float: none;
+    margin: 0;
+}
+
+header .navbar-nav > li {
+    padding: 0;
+    float: none;
+}
+
+header .navbar-nav > li > a,
+header .navbar-default .navbar-nav > li > a {
+    display: block;
+    color: var(--ml-text-soft);
+    font-size: 0.9rem;
+    font-weight: 550;
+    line-height: 1.2;
+    margin: 0;
+    padding: 8px 14px;
+    border-radius: var(--ml-radius-full);
+    background: transparent;
+    transition: background var(--ml-transition), color var(--ml-transition);
+}
+
+header .navbar-nav > li > a:hover,
+header .navbar-default .navbar-nav > li > a:hover,
+header .navbar-nav > li > a:focus,
+header .navbar-default .navbar-nav > li > a:focus {
+    color: var(--ml-text);
+    background: var(--ml-surface-2);
+    text-decoration: none;
+}
+
+header .navbar-nav > li.active > a,
+header .navbar-default .navbar-nav > .active > a,
+header .navbar-default .navbar-nav > .active > a:hover,
+header .navbar-default .navbar-nav > .active > a:focus {
+    color: var(--ml-accent-contrast);
+    background: var(--ml-accent);
+    box-shadow: var(--ml-shadow-accent);
+}
+
+/* Botón hamburguesa */
+.navbar-default .navbar-toggle {
+    border: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius-sm);
+    background: var(--ml-surface);
+    margin: 0;
+    padding: 8px 10px;
+}
+
+.navbar-default .navbar-toggle:hover,
+.navbar-default .navbar-toggle:focus {
+    background: var(--ml-surface-2);
+    border-color: var(--ml-border-strong);
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: var(--ml-text-soft);
+}
+
+/* ------------------------------------------------------------------
+   Portada (bloque #featured para visitantes sin sesión)
+   ------------------------------------------------------------------ */
+#featured {
+    width: 100%;
+    background: transparent;
+    margin: 0;
+    padding: 56px 0 8px;
+}
+
+#featured > .row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 32px;
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-inline: 24px;
+}
+
+#featured > .row > [class^="col-"] {
+    float: none;
+    width: auto;
+    padding: 0;
+}
+
+#featured > .row > .col-md-3 {
+    flex: 0 1 220px;
+}
+
+#featured > .row > .col-md-8 {
+    flex: 1 1 420px;
+}
+
+#featured h2 {
+    font-size: 2.25rem;
+    letter-spacing: -0.03em;
+    margin-bottom: 0.4em;
+}
+
+#featured p {
+    color: var(--ml-text-muted);
+    font-size: 1.0625rem;
+    max-width: 62ch;
+    margin-bottom: 0;
+}
+
+/* ------------------------------------------------------------------
+   Pie de página
+   ------------------------------------------------------------------ */
+footer {
+    background: var(--ml-footer-bg);
+    color: var(--ml-footer-text);
+    padding: 48px 0 0;
+    margin-top: auto;
+    flex: none;
+}
+
+footer .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+}
+
+footer .row > [class^="col-"] {
+    float: none;
+    width: auto;
+    flex: 1 1 220px;
+    padding: 0;
+}
+
+footer h1, footer h2, footer h3,
+footer h4, footer h5, footer h6,
+footer .widgetheading {
+    color: var(--ml-footer-heading);
+    font-size: 0.8rem;
+    font-weight: 650;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    padding: 0;
+    border: 0;
+}
+
+footer address,
+footer p {
+    color: var(--ml-footer-text);
+    line-height: 1.7;
+}
+
+footer a,
+footer ul.link-list li a {
+    color: var(--ml-footer-text);
+    transition: color var(--ml-transition);
+}
+
+footer a:hover,
+footer ul.link-list li a:hover {
+    color: var(--ml-footer-heading);
+    text-decoration: none;
+}
+
+footer ul.link-list li {
+    padding: 4px 0;
+}
+
+#sub-footer {
+    background: transparent;
+    border-top: 1px solid var(--ml-footer-border);
+    color: var(--ml-footer-text);
+    margin: 40px 0 0;
+    padding: 20px 0;
+}
+
+#sub-footer .row {
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+#sub-footer span,
+#sub-footer p,
+.copyright {
+    color: var(--ml-footer-text);
+    font-size: 0.8125rem;
+    text-align: left;
+}
+
+#sub-footer ul.social-network {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    float: none;
+    margin: 0;
+    padding: 0;
+}
+
+#sub-footer ul.social-network li {
+    display: block;
+    margin: 0;
+}
+
+#sub-footer ul.social-network li a {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ml-radius-full);
+    background: rgb(255 255 255 / 0.06);
+    color: var(--ml-footer-text);
+    transition: background var(--ml-transition), color var(--ml-transition);
+}
+
+#sub-footer ul.social-network li a:hover {
+    background: var(--ml-accent);
+    color: var(--ml-accent-contrast);
+}
+
+/* Volver arriba */
+.scrollup {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    border-radius: var(--ml-radius-full);
+    background: var(--ml-accent);
+    box-shadow: var(--ml-shadow-lg);
+    transition: transform var(--ml-transition), background var(--ml-transition);
+    z-index: 40;
+}
+
+.scrollup:hover {
+    background: var(--ml-accent-hover);
+    transform: translateY(-2px);
+}
+
+a.scrollup i {
+    margin: 0;
+    color: var(--ml-accent-contrast);
+}
+
+/* ------------------------------------------------------------------
+   Formularios
+   Las vistas usan campos «desnudos» (<input>, <select>, <textarea>
+   sin clase), así que se estilizan por elemento dentro del contenido.
+   ------------------------------------------------------------------ */
+.featured_content input[type="text"],
+.featured_content input[type="password"],
+.featured_content input[type="email"],
+.featured_content input[type="number"],
+.featured_content input[type="search"],
+.featured_content input[type="tel"],
+.featured_content input[type="url"],
+.featured_content input[type="date"],
+.featured_content input[type="time"],
+.featured_content input[type="datetime-local"],
+.featured_content select,
+.featured_content textarea {
+    display: inline-block;
+    max-width: 100%;
+    padding: 9px 12px;
+    background: var(--ml-surface);
+    color: var(--ml-text);
+    border: 1px solid var(--ml-border-strong);
+    border-radius: var(--ml-radius-sm);
+    font-family: inherit;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    box-shadow: var(--ml-shadow-sm);
+    transition: border-color var(--ml-transition), box-shadow var(--ml-transition);
+}
+
+.featured_content textarea {
+    display: block;
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+}
+
+.featured_content input:hover:not(:disabled):not([readonly]),
+.featured_content select:hover:not(:disabled),
+.featured_content textarea:hover:not(:disabled) {
+    border-color: var(--ml-text-muted);
+}
+
+.featured_content input:focus,
+.featured_content select:focus,
+.featured_content textarea:focus {
+    border-color: var(--ml-accent);
+    box-shadow: 0 0 0 3px var(--ml-accent-ring);
+    outline: none;
+}
+
+.featured_content input:disabled,
+.featured_content select:disabled,
+.featured_content textarea:disabled {
+    background: var(--ml-surface-2);
+    color: var(--ml-text-muted);
+    border-color: var(--ml-border);
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+.featured_content input[readonly] {
+    background: var(--ml-surface-2);
+    box-shadow: none;
+}
+
+.featured_content input::placeholder,
+.featured_content textarea::placeholder {
+    color: var(--ml-text-muted);
+    opacity: 1;
+}
+
+.featured_content select {
+    /* Flecha propia: la nativa no sigue el tema. */
+    -webkit-appearance: none;
+    appearance: none;
+    padding-right: 34px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none' stroke='%236b7785' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.featured_content label {
+    display: inline-block;
+    color: var(--ml-text-soft);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+/* Casillas y radios siguen el acento del tema. */
+.featured_content input[type="checkbox"],
+.featured_content input[type="radio"] {
+    accent-color: var(--ml-accent);
+    width: 17px;
+    height: 17px;
+    margin-right: 6px;
+    vertical-align: -3px;
+    cursor: pointer;
+}
+
+/* Fecha/hora: el icono nativo es negro y desaparece en modo oscuro. */
+:root[data-theme="dark"] .featured_content input[type="date"]::-webkit-calendar-picker-indicator,
+:root[data-theme="dark"] .featured_content input[type="time"]::-webkit-calendar-picker-indicator,
+:root[data-theme="dark"] .featured_content input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) opacity(0.65);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .featured_content input[type="date"]::-webkit-calendar-picker-indicator,
+    :root:not([data-theme="light"]) .featured_content input[type="time"]::-webkit-calendar-picker-indicator,
+    :root:not([data-theme="light"]) .featured_content input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+        filter: invert(1) opacity(0.65);
+    }
+}
+
+/* Formulario de acceso: una tarjeta centrada en vez de campos sueltos. */
+#loginbox {
+    max-width: 380px;
+    margin: 8px auto 40px;
+    padding: 28px;
+    background: var(--ml-surface);
+    border: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius-lg);
+    box-shadow: var(--ml-shadow-md);
+}
+
+#loginbox p {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    color: var(--ml-text-soft);
+    font-size: 0.875rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+}
+
+#loginbox input[type="text"],
+#loginbox input[type="password"] {
+    width: 100%;
+}
+
+#loginbox .button-3 {
+    width: 100%;
+    justify-content: center;
+    padding-block: 10px;
+}
+
+/* ------------------------------------------------------------------
+   Select2 (usado en la configuración del sistema)
+   ------------------------------------------------------------------ */
+.select2-container--default .select2-selection--single {
+    height: auto;
+    padding: 5px 4px;
+    background: var(--ml-surface);
+    border: 1px solid var(--ml-border-strong);
+    border-radius: var(--ml-radius-sm);
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--ml-text);
+    line-height: 1.5;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 100%;
+    top: 0;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-top-color: var(--ml-text-muted);
+}
+
+.select2-dropdown {
+    background: var(--ml-elevated);
+    border-color: var(--ml-border-strong);
+    border-radius: var(--ml-radius-sm);
+    box-shadow: var(--ml-shadow-lg);
+}
+
+.select2-container--default .select2-results__option {
+    color: var(--ml-text);
+}
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background: var(--ml-accent);
+    color: var(--ml-accent-contrast);
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    background: var(--ml-surface);
+    color: var(--ml-text);
+    border: 1px solid var(--ml-border-strong);
+    border-radius: var(--ml-radius-sm);
+    padding: 6px 8px;
+}
+
+/* ------------------------------------------------------------------
+   Selector de tema
+   ------------------------------------------------------------------ */
+.ml-theme {
+    position: relative;
+    flex: none;
+}
+
+.ml-theme-btn {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    background: var(--ml-surface);
+    color: var(--ml-text-soft);
+    border: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius-full);
+    cursor: pointer;
+    transition: background var(--ml-transition), color var(--ml-transition),
+                border-color var(--ml-transition);
+}
+
+.ml-theme-btn:hover {
+    background: var(--ml-surface-2);
+    color: var(--ml-text);
+    border-color: var(--ml-border-strong);
+}
+
+.ml-theme-btn svg {
+    width: 18px;
+    height: 18px;
+}
+
+.ml-theme-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 100;
+    width: 260px;
+    padding: 16px;
+    background: var(--ml-elevated);
+    border: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius);
+    box-shadow: var(--ml-shadow-lg);
+}
+
+.ml-theme-title {
+    margin: 0 0 8px;
+    color: var(--ml-text-muted);
+    font-size: 0.6875rem;
+    font-weight: 650;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+}
+
+.ml-theme-title + * {
+    margin-bottom: 18px;
+}
+
+.ml-theme-panel > :last-child {
+    margin-bottom: 0;
+}
+
+/* Control segmentado claro / oscuro / automático */
+.ml-seg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3px;
+    padding: 3px;
+    background: var(--ml-surface-2);
+    border-radius: var(--ml-radius-sm);
+}
+
+.ml-seg button {
+    padding: 7px 4px;
+    background: transparent;
+    color: var(--ml-text-muted);
+    border: 0;
+    border-radius: calc(var(--ml-radius-sm) - 2px);
+    font: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background var(--ml-transition), color var(--ml-transition);
+}
+
+.ml-seg button:hover {
+    color: var(--ml-text);
+}
+
+.ml-seg button[aria-checked="true"] {
+    background: var(--ml-surface);
+    color: var(--ml-text);
+    box-shadow: var(--ml-shadow-sm);
+}
+
+/* Muestras de color */
+.ml-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.ml-swatches button {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: var(--ml-radius-full);
+    background: var(--swatch);
+    cursor: pointer;
+    transition: transform var(--ml-transition), box-shadow var(--ml-transition);
+}
+
+.ml-swatches button:hover {
+    transform: scale(1.12);
+}
+
+.ml-swatches button[aria-checked="true"] {
+    border-color: var(--ml-text);
+    box-shadow: 0 0 0 2px var(--ml-elevated) inset;
+}
+
+/* ------------------------------------------------------------------
+   Utilidades y detalles sueltos
+   ------------------------------------------------------------------ */
+.txtContent p {
+    color: var(--ml-text);
+}
+
+.featured_content ul,
+.featured_content ol {
+    padding-left: 1.25rem;
+}
+
+.featured_content > .container > ul li,
+.col-md-8 > ul li {
+    margin-bottom: 6px;
+}
+
+/* La plantilla original pinta .btn de verde fijo; que siga el tema. */
+.btn {
+    background: var(--ml-accent);
+    color: var(--ml-accent-contrast);
+    border: 0;
+    border-radius: var(--ml-radius-sm);
+}
+
+.btn:hover,
+.btn:focus {
+    background: var(--ml-accent-hover);
+    color: var(--ml-accent-contrast);
+}
+
+/* ------------------------------------------------------------------
+   Responsive
+   ------------------------------------------------------------------ */
+@media (max-width: 767px) {
+    header .navbar .container {
+        flex-wrap: wrap;
+        padding-block: 10px;
+    }
+
+    header .navbar-collapse {
+        flex-basis: 100%;
+    }
+
+    header .navbar-collapse ul.navbar-nav {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 2px;
+        padding-bottom: 10px;
+    }
+
+    header .navbar-nav > li > a,
+    header .navbar-default .navbar-nav > li > a {
+        border-radius: var(--ml-radius-sm);
+    }
+
+    .featured_content {
+        padding: 24px 0 40px;
+    }
+
+    .featured_content .container,
+    header .container,
+    footer .container {
+        padding-inline: 16px;
+    }
+
+    #featured {
+        padding-top: 32px;
+    }
+
+    #featured > .row {
+        padding-inline: 16px;
+        gap: 16px;
+    }
+
+    #featured h2 {
+        font-size: 1.75rem;
+    }
+
+    #sub-footer ul.social-network {
+        justify-content: flex-start;
+    }
+
+    .ml-theme-panel {
+        right: auto;
+        left: 0;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Piezas añadidas al maquetado (portada, pie, accesibilidad)
+   ------------------------------------------------------------------ */
+
+/* Texto sólo para lectores de pantalla. */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.ml-eyebrow {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 4px 12px;
+    background: var(--ml-accent-soft);
+    color: var(--ml-accent-text);
+    border-radius: var(--ml-radius-full);
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.ml-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 26px;
+}
+
+.ml-hero-actions .button-3 + .button-3 {
+    margin-left: 0;
+}
+
+/* El menú se pega a la derecha, justo antes del selector de tema. */
+header .navbar-collapse {
+    margin-left: auto;
+}
+
+footer .widget {
+    flex: 1 1 220px;
+}
+
+footer .widget address {
+    font-style: normal;
+}
+
+@media (max-width: 767px) {
+    header .navbar-collapse {
+        margin-left: 0;
+    }
+
+    /* El selector queda junto a la marca aunque el menú esté plegado. */
+    header .navbar .container {
+        justify-content: flex-start;
+    }
+
+    .navbar-header {
+        flex: 1 1 auto;
+    }
+
+    .ml-theme {
+        order: 1;
+    }
+
+    header .navbar-collapse {
+        order: 2;
+    }
+}
+
+/* ------------------------------------------------------------------
+   Neutralizar el clearfix de Bootstrap donde hemos puesto flex
+   ---------------------------------------------------------------------
+   Bootstrap 3 añade ::before/::after (content:" "; display:table) a
+   .container, .row, .navbar-header y .navbar-collapse para limpiar los
+   floats. Al convertir esos elementos en contenedores flex, esos
+   pseudo-elementos pasan a ser items y descuadran el reparto del
+   espacio (sobre todo con justify-content: space-between).
+   ------------------------------------------------------------------ */
+header .navbar .container::before,
+header .navbar .container::after,
+.navbar-header::before,
+.navbar-header::after,
+header .navbar-collapse::before,
+header .navbar-collapse::after,
+header .navbar-collapse ul.navbar-nav::before,
+header .navbar-collapse ul.navbar-nav::after,
+#featured > .row::before,
+#featured > .row::after,
+footer .row::before,
+footer .row::after,
+#sub-footer .row::before,
+#sub-footer .row::after {
+    display: none;
+}
+
+/* El panel del selector se oculta con el atributo hidden. */
+.ml-theme-panel[hidden] {
+    display: none;
+}

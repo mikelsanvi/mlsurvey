@@ -4,26 +4,25 @@ require_once 'include/fileparams.php';
 
 
 function showTheSurvey ($db, $surveyid, $readonly = false){
-    $setdisabled = "";
-    if ($readonly){
-        $setdisabled = "disabled";
-    }
+    if (!showSurveyHeader ($db, $surveyid, $readonly))
+        return;
+    echo (setTokenHTML ());
+    showSurveyQuestions ($db, $surveyid, $readonly);
+}
+
+function showSurveyHeader ($db, $surveyid, $readonly = false){
     $query = $db->prepare ("SELECT surveyname, surveydesc, surveyfile FROM {Surveys} where surveyid = :sid");
     $query->bindParam (":sid", $surveyid, PDO::PARAM_INT);
     $query->execute ();
     if ($query->rowCount () == 0){
         ?>
         <p><strong>No se encuentra la consulta seleccionada</strong></p>
-        <?
-        return;
+        <?php
+        return false;
     }
     $survey = $query->fetch ();
     if ($readonly){
-        ?>
-        <h2>Solicitando enlace para la consulta <em><?= $survey['surveyname'];?></em></h2>
-        <p><em>Al final de la muestra de la consulta se encuentra la solicitud del enlace
-            para participar.</em></p>
-        <?php
+        echo ("<h2>Consulta <em>{$survey['surveyname']}</em></h2>");
     }
     else {
         echo ("<h2>Participando en la consulta <em>{$survey['surveyname']}</em></h2>");
@@ -39,10 +38,15 @@ function showTheSurvey ($db, $surveyid, $readonly = false){
         </div>
     <?php
     }
-    
-    
     $query->closeCursor ();
-    echo (setTokenHTML ());
+    return true;
+}
+
+function showSurveyQuestions ($db, $surveyid, $readonly = false){
+    $setdisabled = "";
+    if ($readonly){
+        $setdisabled = "disabled";
+    }
     $questions = $db->prepare ("SELECT * FROM {Questions} WHERE surveyid = :sid");
     $questions->bindParam (":sid", $surveyid, PDO::PARAM_INT);
     $questions->execute ();
@@ -74,7 +78,7 @@ function showTheSurvey ($db, $surveyid, $readonly = false){
             continue;
         }
         if ($optional != 1){
-            echo ("<p style='color: red;'><strong>Obligatoria</strong></p>");
+            echo ("<p class='ml-required'>Obligatoria</p>");
         }
         ?>
         <div class="option">

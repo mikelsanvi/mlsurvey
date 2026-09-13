@@ -1,50 +1,174 @@
+/* =====================================================================
+   mlsurvey · botones
+   ---------------------------------------------------------------------
+   .button-3 es la clase histórica del proyecto y se mantiene para no
+   tocar las ~35 llamadas repartidas por las vistas, pero ahora se pinta
+   con los tokens de theme.css.
+
+   Variantes opcionales:
+     .button-3.is-secondary   acción secundaria (contorno)
+     .button-3.is-ghost       acción terciaria (sin fondo)
+     .button-3.is-danger      acción destructiva
+     .button-3.is-icon        sólo icono, cuadrado
+   ===================================================================== */
+
 .button-3 {
-  appearance: none;
-  background-color: #2ea44f;
-  border: 1px solid rgba(27, 31, 35, .15);
-  border-radius: 6px;
-  box-shadow: rgba(27, 31, 35, .1) 0 1px 0;
-  box-sizing: border-box;
-  color: #fff;
-  cursor: pointer;
-  display: inline-block;
-  font-family: -apple-system,system-ui,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 20px;
-  padding: 6px 16px;
-  position: relative;
-  text-align: center;
-  text-decoration: none;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation;
-  vertical-align: middle;
-  white-space: nowrap;
+    -webkit-appearance: none;
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    background: var(--ml-accent);
+    color: var(--ml-accent-contrast);
+    border: 1px solid transparent;
+    border-radius: var(--ml-radius-sm);
+    box-shadow: var(--ml-shadow-sm);
+
+    font-family: var(--ml-font);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.005em;
+
+    min-height: 38px;
+    padding: 8px 18px;
+    margin: 0;
+
+    cursor: pointer;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: middle;
+    white-space: nowrap;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+
+    transition: background-color var(--ml-transition),
+                box-shadow var(--ml-transition),
+                transform var(--ml-transition),
+                color var(--ml-transition),
+                border-color var(--ml-transition);
 }
 
-.button-3:focus:not(:focus-visible):not(.focus-visible) {
-  box-shadow: none;
-  outline: none;
+.button-3:hover:not(:disabled) {
+    background: var(--ml-accent-hover);
+    color: var(--ml-accent-contrast);
+    box-shadow: var(--ml-shadow-md);
+    transform: translateY(-1px);
+    text-decoration: none;
 }
 
-.button-3:hover {
-  background-color: #2c974b;
+.button-3:active:not(:disabled) {
+    background: var(--ml-accent-active);
+    box-shadow: var(--ml-shadow-sm);
+    transform: translateY(0);
 }
 
-.button-3:focus {
-  box-shadow: rgba(46, 164, 79, .4) 0 0 0 3px;
-  outline: none;
+.button-3:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ml-accent-ring);
 }
 
-.button-3:disabled {
-  background-color: #94d3a2;
-  border-color: rgba(27, 31, 35, .1);
-  color: rgba(255, 255, 255, .8);
-  cursor: default;
+.button-3:focus:not(:focus-visible) {
+    outline: none;
 }
 
-.button-3:active {
-  background-color: #298e46;
-  box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
+/* Deshabilitado de verdad: ahora sí se distingue de uno activo. */
+.button-3:disabled,
+.button-3[aria-disabled="true"] {
+    background: var(--ml-surface-3);
+    color: var(--ml-text-muted);
+    border-color: var(--ml-border);
+    box-shadow: none;
+    transform: none;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+/* --- Variante secundaria --------------------------------------- */
+.button-3.is-secondary {
+    background: var(--ml-surface);
+    color: var(--ml-text);
+    border-color: var(--ml-border-strong);
+}
+
+.button-3.is-secondary:hover:not(:disabled) {
+    background: var(--ml-surface-2);
+    color: var(--ml-text);
+    border-color: var(--ml-text-muted);
+}
+
+.button-3.is-secondary:active:not(:disabled) {
+    background: var(--ml-surface-3);
+}
+
+/* --- Variante terciaria ---------------------------------------- */
+.button-3.is-ghost {
+    background: transparent;
+    color: var(--ml-text-soft);
+    border-color: transparent;
+    box-shadow: none;
+}
+
+.button-3.is-ghost:hover:not(:disabled) {
+    background: var(--ml-surface-2);
+    color: var(--ml-text);
+    box-shadow: none;
+}
+
+/* --- Variante destructiva -------------------------------------- */
+.button-3.is-danger {
+    background: var(--ml-danger);
+    color: #ffffff;
+}
+
+.button-3.is-danger:hover:not(:disabled) {
+    background: var(--ml-danger-hover);
+    color: #ffffff;
+}
+
+.button-3.is-danger:focus-visible {
+    box-shadow: 0 0 0 3px var(--ml-danger-ring);
+}
+
+/* --- Botones de icono ------------------------------------------- */
+.button-3.is-icon,
+.button-3:has(> img:only-child) {
+    width: 38px;
+    min-width: 38px;
+    padding: 0;
+}
+
+/* Los SVG llegan por <img>, donde fill="currentColor" se resuelve a
+   negro. Se tiñen con un filtro que sí depende del tema. */
+.button-3 img {
+    display: block;
+    width: 16px;
+    height: 16px;
+    filter: var(--ml-icon-on-accent);
+    pointer-events: none;
+}
+
+.button-3.is-secondary img,
+.button-3.is-ghost img {
+    filter: var(--ml-icon-on-surface);
+}
+
+/* --- Agrupaciones ------------------------------------------------ */
+/* Varios botones seguidos en un mismo <p> quedaban pegados. */
+.button-3 + .button-3 {
+    margin-left: 8px;
+}
+
+.ml-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.ml-actions .button-3 + .button-3 {
+    margin-left: 0;
 }

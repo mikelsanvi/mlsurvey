@@ -1,25 +1,210 @@
+/* =====================================================================
+   mlsurvey · preguntas y opciones
+   ---------------------------------------------------------------------
+   Antes eran bloques grises (#DDDDDD) que hacían parecer desactivado
+   todo lo que contenían. Ahora son tarjetas sobre la superficie del
+   tema, con la opción anidada un escalón por encima del fondo.
+   ===================================================================== */
+
 .question {
-    /* Add shadows to create the "card" effect */
-    background-color: #DDDDDD;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    padding: 16px;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    position: relative;
+    background: var(--ml-surface);
+    border: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius-lg);
+    box-shadow: var(--ml-shadow-sm);
+    padding: 24px;
+    margin: 20px 0;
+    transition: box-shadow var(--ml-transition), border-color var(--ml-transition);
+}
+
+.question:hover {
+    box-shadow: var(--ml-shadow-md);
+}
+
+/* Filete de acento que identifica la tarjeta de pregunta. */
+.question::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    border-radius: var(--ml-radius-lg) 0 0 var(--ml-radius-lg);
+    background: var(--ml-accent);
+}
+
+.question > h3 {
+    color: var(--ml-text);
+    font-size: 1.125rem;
+    margin-bottom: 18px;
 }
 
 .option {
-    /* Add shadows to create the "card" effect */
-    background-color: #DDDDDD;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    border-radius: 10px;
-    padding: 16px;
+    background: var(--ml-surface-2);
+    border: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius);
+    box-shadow: none;
+    padding: 18px 20px;
+    margin-top: 20px;
 }
 
-.question input[type="text"], input[type="password"], input[type="email"], :not[inputmode="numeric"] {
-    width: 75%;
+.option > p:last-child,
+.question > p:last-child {
+    margin-bottom: 0;
 }
 
+/* Cada opción es una fila: campo flexible + botones al lado. */
+.option p[id^="p-opt-"] {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.option p[id^="p-opt-"] input[type="text"] {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+/* Anchura de los campos largos dentro de una pregunta.
+   La regla original se colaba a todos los input de la página. */
+.question input[type="text"],
+.question input[type="password"],
+.question input[type="email"],
 #survey {
-    width: 75%;
+    width: 100%;
+    max-width: 560px;
+}
+
+/* El editor enriquecido de las descripciones. */
+.hugerte-tinymce,
+.tox-tinymce {
+    border: 1px solid var(--ml-border-strong) !important;
+    border-radius: var(--ml-radius-sm) !important;
+}
+
+/* --- Marca de pregunta obligatoria -------------------------------- */
+.ml-required {
+    display: inline-block;
+    margin-bottom: 12px;
+    padding: 3px 10px;
+    background: var(--ml-warning-soft);
+    color: var(--ml-warning);
+    border-radius: var(--ml-radius-full);
+    font-size: 0.75rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+/* --- Opciones de respuesta ---------------------------------------
+   Cada pareja casilla + etiqueta se convierte en una fila pulsable,
+   con área de click grande. Se filtra con :has() para no tocar los
+   párrafos de resultados, que llevan barras en vez de casillas.
+   ------------------------------------------------------------------ */
+.option p:has(> input[type="radio"]),
+.option p:has(> input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 6px;
+    padding: 10px 14px;
+    background: var(--ml-surface);
+    border: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius-sm);
+    cursor: pointer;
+    transition: border-color var(--ml-transition), background var(--ml-transition);
+}
+
+.option p:has(> input[type="radio"]:hover),
+.option p:has(> input[type="checkbox"]:hover) {
+    border-color: var(--ml-accent);
+    background: var(--ml-accent-soft);
+}
+
+/* La opción marcada se distingue sin depender sólo del color. */
+.option p:has(> input:checked) {
+    border-color: var(--ml-accent);
+    background: var(--ml-accent-soft);
+    box-shadow: inset 3px 0 0 var(--ml-accent);
+}
+
+.option p:has(> input[type="radio"]) > label,
+.option p:has(> input[type="checkbox"]) > label {
+    flex: 1;
+    margin: 0;
+    color: var(--ml-text);
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.option p:has(> input:disabled),
+.option p:has(> input:disabled) > label {
+    cursor: default;
+}
+
+/* --- Entrada a una consulta: participar + vista previa ------------ */
+.ml-participate-card {
+    background: var(--ml-accent-soft);
+    border: 1px solid var(--ml-accent);
+    border-radius: var(--ml-radius-lg);
+    padding: 24px;
+    margin: 24px 0;
+}
+
+.ml-participate-card > h3 {
+    margin-bottom: 8px;
+}
+
+.ml-participate-card label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+}
+
+.ml-participate-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: stretch;
+}
+
+.ml-participate-row input[type="email"] {
+    flex: 1 1 260px;
+    min-width: 0;
+    max-width: 420px;
+}
+
+.button-3.ml-participate-btn {
+    min-height: 46px;
+    padding: 10px 26px;
+    font-size: 1.0625rem;
+}
+
+.ml-survey-preview {
+    margin: 24px 0;
+    border: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius);
+    background: var(--ml-surface);
+}
+
+.ml-survey-preview > summary {
+    cursor: pointer;
+    padding: 14px 20px;
+    font-weight: 600;
+    color: var(--ml-accent-text);
+    user-select: none;
+}
+
+.ml-survey-preview > summary:hover {
+    background: var(--ml-surface-2);
+    border-radius: var(--ml-radius);
+}
+
+.ml-survey-preview[open] > summary {
+    border-bottom: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius) var(--ml-radius) 0 0;
+}
+
+.ml-survey-preview > .question,
+.ml-survey-preview > input + .question {
+    margin: 16px 20px;
 }
