@@ -168,10 +168,28 @@ $view->addHead ();
 	<div id="sub-footer">
 		<div class="container">
 			<div class="row">
-				<div class="copyright">
-					<p>&copy; <?= date ('Y'); ?> mlsurvey &middot;
-					   Diseño base de <a href="http://webthemez.com" target="_blank"
-					   rel="noopener">WebThemez</a> (CC BY 3.0)</p>
+				<div class="col-lg-6">
+					<div class="copyright">
+						<p>
+							<span>Powered by: <a href="https://github.com/pacoandres/mlsurvey" target="_blank">mlsurveys</a></span>
+						</p>
+						<p>
+							<span>Special thanks to: <a href="https://github.com/PHPMailer/PHPMailer" target="_blank">PHPMailer</a>
+						and <a href="https://github.com/hugerte/hugerte" target="_blank">HugeRTE</a></span>
+						</p>
+						<p>
+							<span>Original theme: &copy; Target 2014 All right reserved. By </span><a href="http://webthemez.com" target="_blank">WebThemez</a>
+						</p>
+					</div>
+				</div>
+				<div class="col-lg-6">
+					<ul class="social-network">
+						<li><a href="#" data-placement="top" title="Facebook"><i class="fa fa-facebook"></i></a></li>
+						<li><a href="#" data-placement="top" title="Twitter"><i class="fa fa-twitter"></i></a></li>
+						<li><a href="#" data-placement="top" title="Linkedin"><i class="fa fa-linkedin"></i></a></li>
+						<li><a href="#" data-placement="top" title="Pinterest"><i class="fa fa-pinterest"></i></a></li>
+						<li><a href="#" data-placement="top" title="Google plus"><i class="fa fa-google-plus"></i></a></li>
+					</ul>
 				</div>
 			</div>
 		</div>

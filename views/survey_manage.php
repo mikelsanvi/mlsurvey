@@ -44,7 +44,7 @@ class SurveyManage extends View {
     }
 
     function show (){
-        if (!isAdmin ()){
+        if (!isUser ()){
             showMain ();
             return;
         }
