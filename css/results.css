@@ -1,95 +1,127 @@
+/* =====================================================================
+   mlsurvey · resultados de una consulta
+   ---------------------------------------------------------------------
+   Las barras usan una paleta categórica validada para daltonismo en
+   los dos modos (ver css/theme.css para el resto del sistema).
+   El color va ligado al identificador de la opción, no a su posición
+   en el ranking, así que una opción conserva su color siempre.
+
+   Cada barra lleva su etiqueta visible al lado ("Opción: N votos"),
+   que es lo que permite usar en claro los tonos de bajo contraste.
+   ===================================================================== */
+
+.ml-results-list {
+    margin: 0;
+}
+
+/* --- Paleta categórica: modo claro ------------------------------- */
+.option {
+    --s1: #2a78d6;  /* azul     */
+    --s2: #eb6834;  /* naranja  */
+    --s3: #1baf7a;  /* aguamarina */
+    --s4: #eda100;  /* amarillo */
+    --s5: #e87ba4;  /* magenta  */
+    --s6: #008300;  /* verde    */
+    --s7: #4a3aa7;  /* violeta  */
+    --s8: #e34948;  /* rojo     */
+    --ml-track: var(--ml-surface-3);
+}
+
+/* --- Paleta categórica: modo oscuro ------------------------------ */
+/* Mismos ocho tonos, re-escalonados para el fondo oscuro. */
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .option {
+        --s1: #3987e5;
+        --s2: #d95926;
+        --s3: #199e70;
+        --s4: #c98500;
+        --s5: #d55181;
+        --s6: #008300;
+        --s7: #9085e9;
+        --s8: #e66767;
+    }
+}
+
+:root[data-theme="dark"] .option {
+    --s1: #3987e5;
+    --s2: #d95926;
+    --s3: #199e70;
+    --s4: #c98500;
+    --s5: #d55181;
+    --s6: #008300;
+    --s7: #9085e9;
+    --s8: #e66767;
+}
+
+/* --- Fila de resultado ------------------------------------------- */
+.option p {
+    display: grid;
+    grid-template-columns: minmax(160px, 22ch) 1fr;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+.option p > label {
+    color: var(--ml-text-soft);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* --- Barras ------------------------------------------------------- */
 progress {
     -webkit-appearance: none;
     appearance: none;
-    height: 15px;
-    background-color: #fafafa;
-    border-radius: 5px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
-    border: 0px;
-    width: 80%;
+    display: block;
+    width: 100%;
+    height: 10px;
+    border: 0;
+    border-radius: var(--ml-radius-full);
+    background-color: var(--ml-track);
+    color: var(--ml-accent);
+    overflow: hidden;
 }
 
-/*chromium progress box*/
-progress[value]::-webkit-progress-bar {
-    height: 15px;
-    background-color: #fafafa;
-    border-radius: 5px;
-    box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1) inset;
-    border: 0px;
-    width: 80%;
+progress::-webkit-progress-bar {
+    background-color: var(--ml-track);
+    border-radius: var(--ml-radius-full);
 }
 
-
-/*Firefox progress bar style*/
-progress.magenta::-moz-progress-bar {
-    background-color: magenta;
-    border-radius: 5px;
-}
-/*Webkit progress bar style*/
-progress.magenta::-webkit-progress-value {
-    background: magenta;
-    border-radius: 5px;
+progress::-webkit-progress-value {
+    border-radius: var(--ml-radius-full);
+    background-color: var(--ml-accent);
+    transition: width var(--ml-transition);
 }
 
-progress.green::-moz-progress-bar {
-    background-color: green;
-    border-radius: 5px;
-}
-progress.green::-webkit-progress-value {
-    background: green;
-    border-radius: 5px;
+progress::-moz-progress-bar {
+    border-radius: var(--ml-radius-full);
+    background-color: var(--ml-accent);
 }
 
-progress.blue::-moz-progress-bar {
-    background-color: blue;
-    border-radius: 5px;
-}
-progress.blue::-webkit-progress-value {
-    background: blue;
-    border-radius: 5px;
-}
+/* Un slot por opción. Firefox y WebKit necesitan reglas separadas:
+   no se pueden agrupar los pseudo-elementos en un mismo selector. */
+progress.s1::-webkit-progress-value { background-color: var(--s1); }
+progress.s2::-webkit-progress-value { background-color: var(--s2); }
+progress.s3::-webkit-progress-value { background-color: var(--s3); }
+progress.s4::-webkit-progress-value { background-color: var(--s4); }
+progress.s5::-webkit-progress-value { background-color: var(--s5); }
+progress.s6::-webkit-progress-value { background-color: var(--s6); }
+progress.s7::-webkit-progress-value { background-color: var(--s7); }
+progress.s8::-webkit-progress-value { background-color: var(--s8); }
 
-progress.red::-moz-progress-bar {
-    background-color: red;
-    border-radius: 5px;
-}
-progress.red::-webkit-progress-value {
-    background: red;
-    border-radius: 5px;
-}
+progress.s1::-moz-progress-bar { background-color: var(--s1); }
+progress.s2::-moz-progress-bar { background-color: var(--s2); }
+progress.s3::-moz-progress-bar { background-color: var(--s3); }
+progress.s4::-moz-progress-bar { background-color: var(--s4); }
+progress.s5::-moz-progress-bar { background-color: var(--s5); }
+progress.s6::-moz-progress-bar { background-color: var(--s6); }
+progress.s7::-moz-progress-bar { background-color: var(--s7); }
+progress.s8::-moz-progress-bar { background-color: var(--s8); }
 
-progress.orange::-moz-progress-bar {
-    background-color: orange;
-    border-radius: 5px;
-}
-progress.orange::-webkit-progress-value {
-    background: orange;
-    border-radius: 5px;
-}
-
-progress.brown::-moz-progress-bar {
-    background-color: brown;
-    border-radius: 5px;
-}
-progress.brown::-webkit-progress-value {
-    background: brown;
-    border-radius: 5px;
-}
-
-progress.greenyellow::-moz-progress-bar {
-    background-color: greenyellow;
-    border-radius: 5px;
-}
-progress.greenyellow::-webkit-progress-value {
-    background: greenyellow;
-    border-radius: 5px;
-}
-
-progress.pink::-moz-progress-bar {
-    background-color: pink;
-    border-radius: 5px;
-}
-progress.pink::-webkit-progress-value {
-    background: pink;
-    border-radius: 5px;
+@media (max-width: 600px) {
+    .option p {
+        grid-template-columns: 1fr;
+        gap: 6px;
+    }
 }

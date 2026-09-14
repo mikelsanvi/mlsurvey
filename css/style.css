@@ -5,7 +5,9 @@ Licence under Creative Commons Attribution 3.0
 Donate to remove the back-link (webthemez.com) in this web template 
 -------------------------------------------------------*/
 
-@import url('http://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700|Open+Sans:400,600,700'); 
+/* Fuentes retiradas: la tipografía la define --ml-font en theme.css con
+   una pila del sistema. El @import era http:// (bloqueado como contenido
+   mixto bajo HTTPS) y bloqueaba el pintado esperando a Google. */
 @import url('font-awesome.css');  
 @import url('animate.css');
 

@@ -121,7 +121,7 @@ class SurveyManage extends View {
             <link href="css/tablecard.css" rel="stylesheet" />
             <link href="css/button3.css" rel="stylesheet" />
 <div class="card-table-container">
-            <table class="card-like-table" id="surveystable">
+            <table class="card-like-table ml-stack" id="surveystable">
                 <thead><tr>
                     <td>Consulta</td><td>Fecha inicio</td><td>Fecha fin</td><td>Seleccionar</td>
                 </tr></thead>
@@ -132,8 +132,8 @@ class SurveyManage extends View {
                     ?>
                     <tr id="<?= $id; ?>">
                         <td><span class="username" id="sv-<?= $id; ?>"><?= $row['surveyname']?></span></td>
-                        <td><?= $row['dstart'] ?></td>
-                        <td><?= $row['dend'] ?></td>
+                        <td data-label="Fecha inicio"><?= $row['dstart'] ?></td>
+                        <td data-label="Fecha fin"><?= $row['dend'] ?></td>
                         <td><input type="radio" name="surveyid" value="<?= $id; ?>" id="rb-<?= $id; ?>"></td>
                     </tr>
                     <?php
@@ -211,23 +211,44 @@ class SurveyManage extends View {
         <link href="css/button3.css" rel="stylesheet" />
         <link href="css/questions.css" rel="stylesheet" />
         <style>
+            /* Zona de arrastre del PDF adjunto. */
             .drop-zone {
                 display: block;
-                width: 95%;
-                padding: 1em;
-                border-radius: 4px;
-                color: slategray;
+                width: 100%;
+                padding: 22px;
+                margin-bottom: 20px;
+                border-radius: var(--ml-radius);
+                background: var(--ml-surface-2);
+                color: var(--ml-text-muted);
+                text-align: center;
                 cursor: pointer;
+                transition: background var(--ml-transition),
+                            border-color var(--ml-transition),
+                            color var(--ml-transition);
+            }
+            .drop-zone:hover {
+                background: var(--ml-accent-soft);
+                color: var(--ml-accent-text);
             }
             .dragidle {
-                border: 1px solid #cccccc;
+                border: 1px dashed var(--ml-border-strong);
             }
             .dragging {
-                border: 2px dashed #1abc9c;
+                border: 2px dashed var(--ml-accent);
+                background: var(--ml-accent-soft-hover);
+                color: var(--ml-accent-text);
             }
 
             .survey-file {
                 display: none !important;
+            }
+
+            #filediv {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                margin-top: 12px;
             }
 
             #filename {
@@ -398,7 +419,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
                 const filetext = document.getElementById ("filename");
                 const textfile = document.getElementById ("text-file");
                 filetext.value = filename;
-                filediv.style.display = "block";
+                filediv.style.display = "flex";
                 textfile.style.display = "none";
             }
             function getDroppedFiles (e){

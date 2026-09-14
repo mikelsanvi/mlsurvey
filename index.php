@@ -46,17 +46,20 @@ if ($classview != 'MainView' && file_exists ($classviewfile)){
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Free Bootstrap Template | webthemez</title>
+<?php include 'include/themehead.php'; ?>
+<title>mlsurvey · Consultas</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<meta name="description" content="" />
-<meta name="author" content="http://webthemez.com" />
+<meta name="description" content="Plataforma de consultas y votaciones." />
+<meta name="color-scheme" content="light dark" />
 <!-- css -->
 <link href="css/bootstrap.min.css" rel="stylesheet" />
 <link href="css/fancybox/jquery.fancybox.css" rel="stylesheet">
-<!--<link href="css/jcarousel.css" rel="stylesheet" />-->
 <link href="css/flexslider.css" rel="stylesheet" />
-<!--<link href="js/owl-carousel/owl.carousel.css" rel="stylesheet">-->
 <link href="css/style.css" rel="stylesheet" />
+<!-- El sistema de temas va después de la plantilla: la reescribe. -->
+<link href="css/theme.css" rel="stylesheet" />
+<link href="css/button3.css" rel="stylesheet" />
+<link href="css/ui.css" rel="stylesheet" />
 <script src="js/jquery.js"></script> 
 <?php
 $view->addHead ();
@@ -78,7 +81,11 @@ $view->addHead ();
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <a class="navbar-brand" href="index.php">Aquí un logo de unos 60px de altura</a>
+                    <!-- Sustituir .ml-brand-mark por <img src="img/logo.svg" alt=""> cuando haya logotipo. -->
+                    <a class="navbar-brand" href="index.php">
+                        <span class="ml-brand-mark" aria-hidden="true">ml</span>
+                        <span>mlsurvey</span>
+                    </a>
                 </div>
                 <div class="navbar-collapse collapse ">
                     <ul class="nav navbar-nav">
@@ -99,20 +106,25 @@ $view->addHead ();
 						?>
                     </ul>
                 </div>
+                <?php include 'include/themeswitcher.php'; ?>
             </div>
         </div>
 	</header>
 	<!-- end header -->
 	 <?php
 	 if (!isUser()){?>
+	<!-- Portada: personalizar el texto y poner aquí el logotipo grande. -->
 	<section id="featured">
 		<div class="row">
-			<div class="col-md-3">
-	 			<h2>Esta columna para el logo en grande</h2>
-			</div>
 			<div class="col-md-8">
-	 			<h2>Esta para explicar qué pasa</h2>
-				<p>Lorem ipsum dolor sit amet, unde omnis iste natus tote natus error sit voluptatem accusanti quas potenti maltam rem aperiam, eaque ipsa quae ab illitecto beatae vitae dicemo enim ipsam voluptatem quia voluptas sit aspernatur.</p>
+				<p class="ml-eyebrow">Plataforma de consultas</p>
+	 			<h2>Participa en las consultas abiertas</h2>
+				<p>Consulta las votaciones en curso, participa con tu código
+				   y revisa los resultados de las que ya han terminado.</p>
+				<p class="ml-hero-actions">
+					<a class="button-3" href="surveys">Ver consultas</a>
+					<a class="button-3 is-secondary" href="admin">Entrar</a>
+				</p>
 			</div>
 		</div>
 	</section>
@@ -127,50 +139,29 @@ $view->addHead ();
 	?>
   </div>
 </div>
-</div> 
 	<footer>
 	<div class="container">
 		<div class="row">
-			<div class="col-lg-3">
-				<div class="widget">
-					<h5 class="widgetheading">Contacto</h5>
-					<address>
-					<strong>Por ejemplo eso</strong>
-					</address>
-					<p>
-						<i class="icon-envelope-alt"></i> administradora@dominio.org
-					</p>
-				</div>
+			<div class="widget">
+				<h5 class="widgetheading">mlsurvey</h5>
+				<p>Consultas y votaciones en línea: participación con código,
+				   resultados publicados al cierre.</p>
 			</div>
-			<div class="col-lg-3">
-				<div class="widget">
-					<h5 class="widgetheading">Enlaces importantes</h5>
-					<ul class="link-list">
-						<li><a href="#">Latest Events</a></li>
-						<li><a href="#">Terms and conditions</a></li>
-						<li><a href="#">Privacy policy</a></li>
-					</ul>
-				</div>
+			<div class="widget">
+				<h5 class="widgetheading">Navegación</h5>
+				<ul class="link-list">
+					<?php
+					foreach ($menuarray as $menuitem) {
+						echo ("<li><a href='{$menuitem[ML_MENU_LOCATION]}'>" .
+							$menuitem[ML_MENU_ENTRY] . "</a></li>");
+					}
+					?>
+				</ul>
 			</div>
-			<div class="col-lg-3">
-				<div class="widget">
-					<h5 class="widgetheading">Últimos debates</h5>
-					<ul class="link-list">
-						<li><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></li>
-						<li><a href="#">Pellentesque et pulvinar enim. Quisque at tempor ligula</a></li>
-						<li><a href="#">Natus error sit voluptatem accusantium doloremque</a></li>
-					</ul>
-				</div>
-			</div>
-			<div class="col-lg-3">
-				<div class="widget">
-					<h5 class="widgetheading">Últimas noticias</h5>
-					<ul class="link-list">
-						<li><a href="#">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</a></li>
-						<li><a href="#">Pellentesque et pulvinar enim. Quisque at tempor ligula</a></li>
-						<li><a href="#">Natus error sit voluptatem accusantium doloremque</a></li>
-					</ul>
-				</div>
+			<div class="widget">
+				<!-- Personalizar con los datos reales de contacto. -->
+				<h5 class="widgetheading">Contacto</h5>
+				<address>administradora@dominio.org</address>
 			</div>
 		</div>
 	</div>
@@ -218,6 +209,7 @@ $view->addHead ();
 <script src="js/jquery.flexslider.js"></script>
 <script src="js/animate.js"></script>
 <script src="js/custom.js"></script>
+<script src="js/theme.js"></script>
 <!--<script src="js/owl-carousel/owl.carousel.js"></script>-->
 <?php
 if (isView ($view))

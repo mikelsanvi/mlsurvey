@@ -1,79 +1,248 @@
-/* This container provides the light gray background for the cards to sit on. */
+/* =====================================================================
+   mlsurvey · tablas con aspecto de tarjeta
+   Listados de consultas, usuarias y el menú lateral de la zona privada.
+   ===================================================================== */
+
 .card-table-container {
-    background-color: #f4f7f9;
-    padding: 20px;
-    font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    border-radius: 8px;
+    background: transparent;
+    font-family: var(--ml-font);
+    padding: 0;
+    border-radius: var(--ml-radius-lg);
     overflow-x: auto;
-}
-.card-like-table {
-    /*width: 100%;*/
-    /* Key to creating the gaps between rows */
-    border-collapse: separate;
-    border-spacing: 0 10px; /* 0 horizontal, 10px vertical spacing */
+    margin-bottom: 28px;
 }
 
-/* Visually hide the table header, but keep it for screen readers. */
-/*.card-like-table thead {
-    border: none;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
-}*/
+.card-like-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 8px;
+}
+
 .card-like-table thead {
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    border-radius: 6px;
-    font-weight: 600 !important;
-    /*color: rgb(49,164,88);*/
-    color: #2c5f3e;
-    font-size: 1.2em;
+    background: transparent;
+    box-shadow: none;
+}
+
+.card-like-table thead td {
+    background: transparent;
+    color: var(--ml-text-muted);
+    font-size: 0.6875rem;
+    font-weight: 650;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 4px 20px;
+    white-space: nowrap;
 }
 
 .card-like-table tbody tr {
-    /* Each row acts as a card container */
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    border-radius: 6px;
-    transition: box-shadow 0.2s, transform 0.2s;
+    background: var(--ml-surface);
+    box-shadow: var(--ml-shadow-sm);
+    border-radius: var(--ml-radius);
+    transition: box-shadow var(--ml-transition), transform var(--ml-transition);
 }
 
 .card-like-table tbody tr:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
-    cursor: pointer;
+    box-shadow: var(--ml-shadow-md);
+    transform: translateY(-1px);
 }
 
-/* Style the cells within the card-row */
 .card-like-table td {
-    padding: 15px 20px;
+    padding: 14px 20px;
+    color: var(--ml-text-soft);
+    border-top: 1px solid var(--ml-border);
+    border-bottom: 1px solid var(--ml-border);
+    vertical-align: middle;
 }
-/* Apply rounded corners to the first and last cell of each row */
+
 .card-like-table td:first-child {
-    border-top-left-radius: 6px;
-    border-bottom-left-radius: 6px;
+    border-left: 1px solid var(--ml-border);
+    border-radius: var(--ml-radius) 0 0 var(--ml-radius);
 }
+
 .card-like-table td:last-child {
-    border-top-right-radius: 6px;
-    border-bottom-right-radius: 6px;
-    /*text-align: right; /* Often the last cell contains actions or status */
+    border-right: 1px solid var(--ml-border);
+    border-radius: 0 var(--ml-radius) var(--ml-radius) 0;
 }
 
 .card-like-table .username {
+    color: var(--ml-text);
     font-weight: 600;
-    color: #2c3e50;
 }
 
-/*.card-like-table .project-name {
-    font-size: 0.9rem;
-    color: #7f8c8d;
+/* --- Menú lateral de la zona privada ----------------------------- */
+#usermenutable {
+    width: 100%;
 }
 
-.card-like-table .due-date {
-    font-size: 0.9rem;
-    font-weight: 500;
-}*/
+#usermenutable td {
+    padding: 0;
+}
+
+#usermenutable thead td {
+    padding: 4px 4px 6px;
+}
+
+#usermenutable tbody td a {
+    display: block;
+    padding: 12px 18px;
+    color: var(--ml-text-soft);
+    font-weight: 550;
+    border-radius: var(--ml-radius);
+    transition: background var(--ml-transition), color var(--ml-transition);
+}
+
+#usermenutable tbody td a:hover {
+    background: var(--ml-accent-soft);
+    color: var(--ml-accent-text);
+    text-decoration: none;
+}
+
+/* Salir se separa del resto de opciones. */
+#usermenutable tr#last td a {
+    color: var(--ml-text-muted);
+}
+
+#usermenutable tr#last td a:hover {
+    background: var(--ml-danger-soft);
+    color: var(--ml-danger);
+}
+
+/* --- Pantallas medianas: el menú lateral pasa a fila de botones --- */
+@media (max-width: 991px) {
+    #usermenutable,
+    #usermenutable thead,
+    #usermenutable thead tr,
+    #usermenutable tbody,
+    #usermenutable tr,
+    #usermenutable td {
+        display: block;
+    }
+
+    #usermenutable thead td {
+        border: 0;
+    }
+
+    #usermenutable tbody {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    #usermenutable tbody tr {
+        border-radius: var(--ml-radius-full);
+    }
+
+    #usermenutable tbody tr:hover {
+        transform: none;
+    }
+
+    #usermenutable tbody td,
+    #usermenutable tbody td:first-child,
+    #usermenutable tbody td:last-child {
+        border: 1px solid var(--ml-border);
+        border-radius: var(--ml-radius-full);
+    }
+
+    #usermenutable tbody td a {
+        padding: 8px 16px;
+        font-size: 0.875rem;
+        border-radius: var(--ml-radius-full);
+        white-space: nowrap;
+    }
+
+    .card-table-container:has(> #usermenutable) {
+        margin-bottom: 20px;
+    }
+}
+
+/* --- Móvil: cada fila de la tabla se convierte en una tarjeta ------
+   Las celdas con data-label muestran la etiqueta a la izquierda y el
+   valor a la derecha; la primera celda hace de título; los botones
+   ocupan todo el ancho y el radio de selección va en la esquina. */
+@media (max-width: 700px) {
+    .card-table-container:has(> .ml-stack) {
+        overflow: visible;
+    }
+
+    .card-like-table.ml-stack,
+    .card-like-table.ml-stack tbody,
+    .card-like-table.ml-stack tr,
+    .card-like-table.ml-stack td {
+        display: block;
+        width: 100%;
+    }
+
+    .card-like-table.ml-stack thead {
+        display: none;
+    }
+
+    .card-like-table.ml-stack tbody tr {
+        position: relative;
+        margin-bottom: 12px;
+        padding: 14px 16px;
+        border: 1px solid var(--ml-border);
+        border-radius: var(--ml-radius);
+    }
+
+    .card-like-table.ml-stack td,
+    .card-like-table.ml-stack td:first-child,
+    .card-like-table.ml-stack td:last-child {
+        padding: 3px 0;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .card-like-table.ml-stack td:first-child {
+        padding-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .card-like-table.ml-stack td[data-label] {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 0.875rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .card-like-table.ml-stack td[data-label]::before {
+        content: attr(data-label);
+        color: var(--ml-text-muted);
+        font-weight: 500;
+    }
+
+    .card-like-table.ml-stack td:has(> .button-3) {
+        padding-top: 12px;
+    }
+
+    .card-like-table.ml-stack td > .button-3 {
+        width: 100%;
+    }
+
+    /* Tablas de gestión: la fila entera selecciona el radio. */
+    .card-like-table.ml-stack tr:has(input[type="radio"]) {
+        cursor: pointer;
+    }
+
+    .card-like-table.ml-stack tr:has(input[type="radio"]:checked) {
+        border-color: var(--ml-accent);
+        box-shadow: inset 3px 0 0 var(--ml-accent), var(--ml-shadow-sm);
+    }
+
+    .card-like-table.ml-stack td:has(> input[type="radio"]) {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: auto;
+        padding: 0;
+    }
+
+    .card-like-table.ml-stack tr:has(input[type="radio"]) td:first-child {
+        padding-right: 32px;
+    }
+
+    /* La de usuarias sólo tiene nombre: sin hueco bajo el título. */
+    #userstable td:first-child {
+        padding-bottom: 3px;
+    }
+}

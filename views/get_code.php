@@ -55,22 +55,39 @@ class GetCode extends View {
             //echo ("<h2>Obteniendo código para la consulta <em>{$row['surveyname']}</em>.</h2>");
             $_SESSION['surveyname'] = $row['surveyname'];
             $survey->closeCursor ();
-            showTheSurvey ($db, $_SESSION['surveyid'], true);
+            if (!showSurveyHeader ($db, $_SESSION['surveyid'], true)){
+                removeToken ();
+                return;
+            }
+            ?>
+            <section class="ml-participate-card">
+                <h3>Participar en la consulta</h3>
+                <p>Introduce tu dirección de correo y te enviaremos un enlace personal
+                    para participar.</p>
+                <form id="getcode" name="getcode" method="POST" action="get_code">
+                    <?= setTokenHTML (); ?>
+                    <label for="email">Dirección de correo</label>
+                    <div class="ml-participate-row">
+                        <input type="email" name="email" id="email" required
+                            placeholder="nombre@dominio.es" autocomplete="email">
+                        <button type="submit" class="button-3 ml-participate-btn"
+                            name="<?= self::ACTION; ?>" value="<?= self::ACTION; ?>">
+                            Participar en la consulta</button>
+                    </div>
+                </form>
+            </section>
+
+            <details class="ml-survey-preview">
+                <summary>Ver las preguntas de la consulta</summary>
+                <?php showSurveyQuestions ($db, $_SESSION['surveyid'], true); ?>
+            </details>
+            <?php
         }
         catch (Exception $e){
             removeToken ();
             echo ("<p><strong>Error al acceder a la consulta seleccionada.</strong></p>");
             logMessage (LOGGER_ERROR, "Error {$e} getting survey for code.");
         }
-        ?>
-        <form id="getcode" name="getcode" method="POST" action="get_code">
-            <?= setTokenHTML (); ?>
-            <p><label for="email">Dirección de correo:</label>
-            <input type="email" name="email" id="email" style="width: 40%;" required></p>
-            <p><input type="submit" class="button-3" name="<?= self::ACTION; ?>"
-                value="<?= self::ACTION; ?>"></p>
-        </form>
-        <?php
     }
 
     private function insertParticipant ($db, $email, $hashmail){

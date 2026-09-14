@@ -114,7 +114,7 @@ class UserManage extends View {
             }
             ?>
             <div class="card-table-container">
-            <table class="card-like-table" id="userstable">
+            <table class="card-like-table ml-stack" id="userstable">
                 <thead><tr>
                     <td>Usuaria</td><td>Seleccionar</td>
                 </tr></thead>
