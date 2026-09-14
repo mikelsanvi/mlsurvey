@@ -57,7 +57,7 @@ class ResponseSurvey extends View {
             onload='document.getElementById("email").focus();'>
             <?= setTokenHTML (); ?>
             <p><label for="email">Dirección de correo:</label>
-            <input type="email" name="email" id="email" style="width: 40%;" required></p>
+            <input type="email" name="email" id="email" class="ml-field-md" required></p>
             <p><label for="code">Código:</label>
             <input type="password" name="code" id="code" inputmode="numeric"
             size="6" minlength="6" maxlength="6" required></p>

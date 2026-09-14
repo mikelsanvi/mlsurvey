@@ -121,7 +121,7 @@ class SurveyManage extends View {
             <link href="css/tablecard.css" rel="stylesheet" />
             <link href="css/button3.css" rel="stylesheet" />
 <div class="card-table-container">
-            <table class="card-like-table" id="surveystable">
+            <table class="card-like-table ml-stack" id="surveystable">
                 <thead><tr>
                     <td>Consulta</td><td>Fecha inicio</td><td>Fecha fin</td><td>Seleccionar</td>
                 </tr></thead>
@@ -132,8 +132,8 @@ class SurveyManage extends View {
                     ?>
                     <tr id="<?= $id; ?>">
                         <td><span class="username" id="sv-<?= $id; ?>"><?= $row['surveyname']?></span></td>
-                        <td><?= $row['dstart'] ?></td>
-                        <td><?= $row['dend'] ?></td>
+                        <td data-label="Fecha inicio"><?= $row['dstart'] ?></td>
+                        <td data-label="Fecha fin"><?= $row['dend'] ?></td>
                         <td><input type="radio" name="surveyid" value="<?= $id; ?>" id="rb-<?= $id; ?>"></td>
                     </tr>
                     <?php

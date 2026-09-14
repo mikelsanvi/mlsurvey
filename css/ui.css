@@ -848,9 +848,10 @@ a.scrollup i {
         justify-content: flex-start;
     }
 
+    /* El botón queda en el borde derecho: el panel no puede abrirse hacia
+       la derecha, y en pantallas muy estrechas no debe salirse de ella. */
     .ml-theme-panel {
-        right: auto;
-        left: 0;
+        max-width: calc(100vw - 32px);
     }
 }
 
@@ -960,4 +961,138 @@ footer .row::after,
 /* El panel del selector se oculta con el atributo hidden. */
 .ml-theme-panel[hidden] {
     display: none;
+}
+
+/* ------------------------------------------------------------------
+   Adaptación a pantallas pequeñas
+   ---------------------------------------------------------------------
+   Puntos de corte:
+     991px  Bootstrap apila .col-md-*: el menú de la zona privada pasa
+            de columna lateral a fila de botones sobre el contenido.
+     767px  Bootstrap pliega la navegación (hamburguesa).
+     600px  Móvil: campos a todo el ancho y botones que se reparten.
+   ------------------------------------------------------------------ */
+
+/* Nombres de consulta largos o direcciones no deben desbordar. */
+.featured_content h1,
+.featured_content h2,
+.featured_content h3,
+.featured_content p,
+.featured_content td {
+    overflow-wrap: break-word;
+}
+
+/* Campo de ancho medio (sustituye a los style="width: 40%" en línea). */
+.featured_content .ml-field-md {
+    width: 100%;
+    max-width: 420px;
+}
+
+/* Las filas de Bootstrap tienen margen negativo de 15px; con el flex del
+   pie y el relleno propio del contenedor, el texto quedaba pegado al
+   borde de la pantalla. */
+footer .row {
+    margin-inline: 0;
+}
+
+@media (max-width: 991px) {
+    /* Columnas apiladas: separar el menú del contenido. */
+    .featured_content .row > .col-md-4,
+    .featured_content .row > .col-md-8 {
+        margin-bottom: 8px;
+    }
+}
+
+@media (max-width: 767px) {
+    /* Bootstrap y la plantilla desplazan la cabecera en móvil
+       (márgenes negativos y margin-top: 20px); aquí manda el flex. */
+    header .navbar .container > .navbar-header,
+    header .navbar .container > .navbar-collapse {
+        margin: 0;
+    }
+
+    header .navbar-collapse {
+        max-height: none;
+    }
+
+    footer {
+        padding-top: 36px;
+    }
+
+    footer .row {
+        gap: 24px;
+    }
+
+    .scrollup {
+        right: 16px;
+        bottom: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    h1 { font-size: 1.625rem; }
+    h2 { font-size: 1.3rem; }
+    h3 { font-size: 1.125rem; }
+
+    #featured h2 {
+        font-size: 1.5rem;
+    }
+
+    /* Campos a todo el ancho: la etiqueta queda encima y el campo
+       es fácil de pulsar. */
+    .featured_content input[type="text"]:not(#filename),
+    .featured_content input[type="password"],
+    .featured_content input[type="email"],
+    .featured_content input[type="number"],
+    .featured_content input[type="search"],
+    .featured_content input[type="tel"],
+    .featured_content input[type="url"],
+    .featured_content input[type="date"],
+    .featured_content input[type="time"],
+    .featured_content input[type="datetime-local"],
+    .featured_content select,
+    .featured_content .ml-field-md {
+        width: 100%;
+        max-width: 100%;
+        /* 16px evita el zoom automático de iOS al enfocar. */
+        font-size: 1rem;
+    }
+
+    /* Select2 copia el ancho en línea (40%, 25%) del <select>. */
+    .featured_content .select2-container {
+        width: 100% !important;
+    }
+
+    /* La plantilla da margin-left: 10px a todas las etiquetas; con los
+       campos debajo, la que abre el párrafo quedaba desalineada. */
+    .featured_content p > label:first-child {
+        margin-left: 0;
+    }
+
+    /* Grupos de botones en un párrafo: que salten de línea con
+       separación en vez de salirse por la derecha. Las filas de
+       opciones del editor (p-opt-*) ya tienen su propio flex. */
+    .featured_content p:has(> .button-3):not([id^="p-opt-"]) {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .featured_content p:has(> .button-3):not([id^="p-opt-"]) > .button-3 {
+        flex: 1 1 auto;
+        margin-left: 0;
+    }
+
+    .button-3 {
+        white-space: normal;
+    }
+
+    .ml-hero-actions .button-3 {
+        flex: 1 1 140px;
+    }
+
+    #loginbox {
+        padding: 20px;
+        margin-top: 0;
+    }
 }

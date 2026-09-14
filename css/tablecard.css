@@ -106,3 +106,143 @@
     background: var(--ml-danger-soft);
     color: var(--ml-danger);
 }
+
+/* --- Pantallas medianas: el menú lateral pasa a fila de botones --- */
+@media (max-width: 991px) {
+    #usermenutable,
+    #usermenutable thead,
+    #usermenutable thead tr,
+    #usermenutable tbody,
+    #usermenutable tr,
+    #usermenutable td {
+        display: block;
+    }
+
+    #usermenutable thead td {
+        border: 0;
+    }
+
+    #usermenutable tbody {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    #usermenutable tbody tr {
+        border-radius: var(--ml-radius-full);
+    }
+
+    #usermenutable tbody tr:hover {
+        transform: none;
+    }
+
+    #usermenutable tbody td,
+    #usermenutable tbody td:first-child,
+    #usermenutable tbody td:last-child {
+        border: 1px solid var(--ml-border);
+        border-radius: var(--ml-radius-full);
+    }
+
+    #usermenutable tbody td a {
+        padding: 8px 16px;
+        font-size: 0.875rem;
+        border-radius: var(--ml-radius-full);
+        white-space: nowrap;
+    }
+
+    .card-table-container:has(> #usermenutable) {
+        margin-bottom: 20px;
+    }
+}
+
+/* --- Móvil: cada fila de la tabla se convierte en una tarjeta ------
+   Las celdas con data-label muestran la etiqueta a la izquierda y el
+   valor a la derecha; la primera celda hace de título; los botones
+   ocupan todo el ancho y el radio de selección va en la esquina. */
+@media (max-width: 700px) {
+    .card-table-container:has(> .ml-stack) {
+        overflow: visible;
+    }
+
+    .card-like-table.ml-stack,
+    .card-like-table.ml-stack tbody,
+    .card-like-table.ml-stack tr,
+    .card-like-table.ml-stack td {
+        display: block;
+        width: 100%;
+    }
+
+    .card-like-table.ml-stack thead {
+        display: none;
+    }
+
+    .card-like-table.ml-stack tbody tr {
+        position: relative;
+        margin-bottom: 12px;
+        padding: 14px 16px;
+        border: 1px solid var(--ml-border);
+        border-radius: var(--ml-radius);
+    }
+
+    .card-like-table.ml-stack td,
+    .card-like-table.ml-stack td:first-child,
+    .card-like-table.ml-stack td:last-child {
+        padding: 3px 0;
+        border: 0;
+        border-radius: 0;
+    }
+
+    .card-like-table.ml-stack td:first-child {
+        padding-bottom: 8px;
+        font-size: 1rem;
+    }
+
+    .card-like-table.ml-stack td[data-label] {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        font-size: 0.875rem;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .card-like-table.ml-stack td[data-label]::before {
+        content: attr(data-label);
+        color: var(--ml-text-muted);
+        font-weight: 500;
+    }
+
+    .card-like-table.ml-stack td:has(> .button-3) {
+        padding-top: 12px;
+    }
+
+    .card-like-table.ml-stack td > .button-3 {
+        width: 100%;
+    }
+
+    /* Tablas de gestión: la fila entera selecciona el radio. */
+    .card-like-table.ml-stack tr:has(input[type="radio"]) {
+        cursor: pointer;
+    }
+
+    .card-like-table.ml-stack tr:has(input[type="radio"]:checked) {
+        border-color: var(--ml-accent);
+        box-shadow: inset 3px 0 0 var(--ml-accent), var(--ml-shadow-sm);
+    }
+
+    .card-like-table.ml-stack td:has(> input[type="radio"]) {
+        position: absolute;
+        top: 14px;
+        right: 14px;
+        width: auto;
+        padding: 0;
+    }
+
+    .card-like-table.ml-stack tr:has(input[type="radio"]) td:first-child {
+        padding-right: 32px;
+    }
+
+    /* La de usuarias sólo tiene nombre: sin hueco bajo el título. */
+    #userstable td:first-child {
+        padding-bottom: 3px;
+    }
+}

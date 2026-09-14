@@ -208,3 +208,43 @@
 .ml-survey-preview > input + .question {
     margin: 16px 20px;
 }
+
+/* --- Móvil -------------------------------------------------------- */
+@media (max-width: 600px) {
+    .question {
+        padding: 18px 16px;
+        margin: 16px 0;
+    }
+
+    .option {
+        padding: 12px;
+        margin-top: 14px;
+    }
+
+    .ml-participate-card {
+        padding: 18px 16px;
+    }
+
+    /* Campo y botón uno debajo del otro, ambos a todo el ancho. */
+    .ml-participate-row {
+        flex-direction: column;
+    }
+
+    .ml-participate-row input[type="email"] {
+        flex: none;
+        max-width: none;
+    }
+
+    .button-3.ml-participate-btn {
+        width: 100%;
+    }
+
+    .ml-survey-preview > summary {
+        padding: 14px 16px;
+    }
+
+    .ml-survey-preview > .question,
+    .ml-survey-preview > input + .question {
+        margin: 12px;
+    }
+}

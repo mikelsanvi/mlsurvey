@@ -72,7 +72,7 @@ class Surveys extends View {
         </script>
         <input type="hidden" id="responseid" name="responseid">
         <div class="card-table-container">
-            <table class="card-like-table" id="surveystable">
+            <table class="card-like-table ml-stack" id="surveystable">
                 <thead><tr>
                     <td>Consulta</td><td>Fecha inicio</td><td>Fecha fin</td><td>Seleccionar</td>
                 </tr></thead>
@@ -83,8 +83,8 @@ class Surveys extends View {
                     ?>
                     <tr id="<?= "response_" . $id; ?>">
                         <td><span class="username" id="svr-<?= $id; ?>"><?= $survey['surveyname']?></span></td>
-                        <td><?= $survey['dstart'] ?></td>
-                        <td><?= $survey['dend'] ?></td>
+                        <td data-label="Fecha inicio"><?= $survey['dstart'] ?></td>
+                        <td data-label="Fecha fin"><?= $survey['dend'] ?></td>
                         <td><input type="submit" class="button-3" onclick="return getCode (<?= $id; ?>);"
                             value="Ver y participar" name="<?= self::SURVEY_RESPONSE; ?>"></td>
                     </tr>
@@ -110,7 +110,7 @@ class Surveys extends View {
         <form id="resultsesurvey" name="resultsesurvey" method="GET" action="results">
         <input type="hidden" name="queryid" id="queryid">
         <div class="card-table-container">
-            <table class="card-like-table" id="surveystable">
+            <table class="card-like-table ml-stack" id="surveystable">
                 <thead><tr>
                     <td>Consulta</td><td>Fecha inicio</td><td>Fecha fin</td><td>Seleccionar</td>
                 </tr></thead>
@@ -121,8 +121,8 @@ class Surveys extends View {
                     ?>
                     <tr id="<?= "query_" . $id; ?>">
                         <td><span class="username" id="svr-<?= $id; ?>"><?= $survey['surveyname']?></span></td>
-                        <td><?= $survey['dstart'] ?></td>
-                        <td><?= $survey['dend'] ?></td>
+                        <td data-label="Fecha inicio"><?= $survey['dstart'] ?></td>
+                        <td data-label="Fecha fin"><?= $survey['dend'] ?></td>
                         <td><input type="submit" class="button-3"
                             onclick="return queryResults (<?= $id; ?>);" value="Ver resultado"></td>
                     </tr>
