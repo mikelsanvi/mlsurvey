@@ -26,7 +26,7 @@
 .card-like-table thead td {
     background: transparent;
     color: var(--ml-text-muted);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     font-weight: 650;
     letter-spacing: 0.07em;
     text-transform: uppercase;

@@ -17,6 +17,10 @@ class Results extends View {
         "s8",
     ];
 
+    function getMenuGroup (){
+        return ML_MENU_GROUP_ENDED_SURVEYS;
+    }
+
     public function loadStyles (){
         ?>
         <link href="css/results.css" rel="stylesheet" />
