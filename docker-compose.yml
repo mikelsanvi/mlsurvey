@@ -2,6 +2,14 @@ services:
   db:
     image: mariadb:11.4
     restart: unless-stopped
+    # Dimensionado para el pool de conexiones persistentes de la web (un unico cliente):
+    # max_connections > APACHE_MAX_WORKERS, con margen para el entrypoint y administracion.
+    command:
+      - --max-connections=${DB_MAX_CONNECTIONS:-200}
+      - --thread-cache-size=${APACHE_MAX_WORKERS:-150}
+      - --back-log=1024
+      - --max-connect-errors=100000
+      - --skip-name-resolve
     ports:
       - 3306:3306
     environment:
@@ -36,6 +44,11 @@ services:
       DB_USER: ${DB_USER:-mlsurvey}
       DB_PASSWORD: ${DB_PASSWORD:-mlsurvey}
       DB_PREFIX: ${DB_PREFIX:-}
+      # Pool de workers/conexiones. Mantener por debajo de DB_MAX_CONNECTIONS.
+      APACHE_MAX_WORKERS: ${APACHE_MAX_WORKERS:-150}
+      APACHE_START_WORKERS: ${APACHE_START_WORKERS:-25}
+      APACHE_MAX_SPARE_WORKERS: ${APACHE_MAX_SPARE_WORKERS:-75}
+      APACHE_LISTEN_BACKLOG: ${APACHE_LISTEN_BACKLOG:-1024}
       # Rellenar si la aplicacion esta detras de un proxy inverso.
       PROXY_PATH: ${PROXY_PATH:-}
       PROXY_PORT: ${PROXY_PORT:-}
