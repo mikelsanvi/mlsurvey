@@ -21,10 +21,14 @@ INSERT INTO Users (username, passwd, `role`) VALUES ('admin', '$2y$10$b1Z0iC4TCY
 INSERT INTO Users (username, passwd, `role`) VALUES ('profesora', '$2y$10$loC.cYvR0R12ApxvPmvhNOeg4VYDmDLv5/tWsAFnH26Q8Aj.EXMpi', '');
 
 /* ---------- Configuracion del sistema ---------- */
-INSERT INTO SystemConfig (configid, timezone, alloweddomains, emailmethod, emailfrom)
-    VALUES (1, 'Europe/Madrid', 'example.com ejemplo.org', 0, 'consultas@example.com');
-/* emailmethod = 0 (MlMailer::NO_METHOD): no se envian correos. Configura SMTP o
-   sendmail desde 'Configuracion del sistema' si quieres recibir los codigos. */
+/* emailmethod   = 1 (MLMailer::SMTP_METHOD)
+   emailsecurity = 'tls' (PHPMailer::ENCRYPTION_STARTTLS) o 'ssl' (PHPMailer::ENCRYPTION_SMTPS)
+   Los datos SMTP son de ejemplo: cambialos desde 'Configuracion del sistema'
+   (o aqui) por los de un servidor real para poder recibir los codigos. */
+INSERT INTO SystemConfig (configid, timezone, alloweddomains, emailmethod, emailfrom,
+        emailserver, emailuser, emailpasswd, emailport, emailsecurity)
+    VALUES (1, 'Europe/Madrid', 'educa.madrid.org', 1, 'consultas@mlsurvey.org',
+        'smtp.mlsurvey.org', 'consultas@mlsurvey.org', 'smtp123', 587, 'tls');
 
 /* ---------- Consultas, preguntas y opciones ---------- */
 /* 1: Consulta sobre el horario lectivo */
