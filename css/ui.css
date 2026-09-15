@@ -552,26 +552,38 @@ a.scrollup i {
 
 /* ------------------------------------------------------------------
    Select2 (usado en la configuración del sistema)
+   La vista carga select2.css después de este archivo, así que las
+   reglas llevan .select2-container duplicado para ganar en
+   especificidad a sus alturas fijas (28px), que descentraban el texto.
    ------------------------------------------------------------------ */
-.select2-container--default .select2-selection--single {
+.select2-container.select2-container--default .select2-selection--single {
+    display: flex;
+    align-items: center;
     height: auto;
-    padding: 5px 4px;
+    min-height: calc(1rem * 1.4 + 20px);
+    padding: 0;
     background: var(--ml-surface);
     border: 1px solid var(--ml-border-strong);
     border-radius: var(--ml-radius-sm);
+    box-shadow: var(--ml-shadow-sm);
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+.select2-container.select2-container--default .select2-selection--single .select2-selection__rendered {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 9px 34px 9px 12px;
     color: var(--ml-text);
-    line-height: 1.5;
+    font-size: 1rem;
+    line-height: 1.4;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 100%;
+.select2-container.select2-container--default .select2-selection--single .select2-selection__arrow {
     top: 0;
+    right: 6px;
+    height: 100%;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow b {
+.select2-container.select2-container--default .select2-selection--single .select2-selection__arrow b {
     border-top-color: var(--ml-text-muted);
 }
 
