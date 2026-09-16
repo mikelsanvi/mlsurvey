@@ -2,16 +2,10 @@
 require_once "ifaces/view.php";
 require_once "utils/dbutils.php";
 
-class Surveys extends View {
-    public const SURVEY_RESPONSE = "response";
-    private const SURVEY_QUERY = "query";
-    private const RESPONSE_VALUES = [
-        'code' => "Obtener código",
-        'response' => "Responder"
-    ];
+class EndedSurveys extends View {
 
     function getMenuGroup (){
-        return ML_MENU_GROUP_SURVEYS;
+        return ML_MENU_GROUP_ENDED_SURVEYS;
     }
 
     public function loadStyles (){
@@ -24,37 +18,37 @@ class Surveys extends View {
         try {
             $db = dbConn ();
             $query = $db->prepare ("SELECT surveyid, surveyname" .
-                ", DATE_FORMAT(enddate,'%d/%m/%Y %T') as dend" . 
-                ", DATE_FORMAT(startdate,'%d/%m/%Y %T') as dstart ". 
+                ", DATE_FORMAT(enddate,'%d/%m/%Y %T') as dend" .
+                ", DATE_FORMAT(startdate,'%d/%m/%Y %T') as dstart ".
                 "FROM {Surveys} WHERE " .
-                "startdate < NOW() and enddate > NOW() " .
-                "ORDER BY startdate DESC");
+                "enddate < NOW() " .
+                "ORDER BY enddate DESC");
             $query->execute ();
             if ($query->rowCount () == 0){
-                echo ("<strong>No hay consultas activas para realizar.</strong>");
+                echo ("<p><strong>No hay consultas finalizadas para consultar.</strong></p>");
             }
             else {
-                $this->addActiveSurveys ($query);
+                $this->addEndedSurveys ($query);
             }
             $query->closeCursor ();
         }
         catch (Exception $e){
             echo ("<strong>Error recuperando consultas.</strong>");
-            logMessage (LOGGER_ERROR, "Error {$e} loading surveys.");
+            logMessage (LOGGER_ERROR, "Error {$e} loading ended surveys.");
         }
     }
 
-    private function addActiveSurveys ($surveys){
+    private function addEndedSurveys ($surveys){
         ?>
-        <form id="responsesurvey" name="responsesurvey" method="POST" action="get_code">
         <script type="text/javascript">
-        function getCode (surveyid){
-            const survey = document.getElementById ("responseid");
-            survey.value = surveyid;
+        function queryResults ($id){
+            const query = document.getElementById ("queryid");
+            query.value = $id;
             return true;
         }
         </script>
-        <input type="hidden" id="responseid" name="responseid">
+        <form id="resultsesurvey" name="resultsesurvey" method="GET" action="results">
+        <input type="hidden" name="queryid" id="queryid">
         <div class="card-table-container">
             <table class="card-like-table ml-stack" id="surveystable">
                 <thead><tr>
@@ -65,12 +59,12 @@ class Surveys extends View {
                 while ($survey = $surveys->fetch ()){
                     $id = $survey['surveyid'];
                     ?>
-                    <tr id="<?= "response_" . $id; ?>">
+                    <tr id="<?= "query_" . $id; ?>">
                         <td><span class="username" id="svr-<?= $id; ?>"><?= $survey['surveyname']?></span></td>
                         <td data-label="Fecha inicio"><?= $survey['dstart'] ?></td>
                         <td data-label="Fecha fin"><?= $survey['dend'] ?></td>
-                        <td><input type="submit" class="button-3" onclick="return getCode (<?= $id; ?>);"
-                            value="Ver y participar" name="<?= self::SURVEY_RESPONSE; ?>"></td>
+                        <td><input type="submit" class="button-3"
+                            onclick="return queryResults (<?= $id; ?>);" value="Ver resultado"></td>
                     </tr>
                     <?php
                 }

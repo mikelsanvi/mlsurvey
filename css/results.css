@@ -64,7 +64,7 @@
 
 .option p > label {
     color: var(--ml-text-soft);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 500;
     margin: 0;
 }

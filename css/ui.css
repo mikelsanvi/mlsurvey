@@ -14,7 +14,10 @@
     box-sizing: border-box;
 }
 
+/* Bootstrap fija html{font-size:62.5%} (1rem = 10px); los rem de la
+   interfaz cuentan con la base del navegador (16px). */
 html {
+    font-size: 100%;
     -webkit-text-size-adjust: 100%;
 }
 
@@ -25,7 +28,7 @@ body {
     background-attachment: fixed;
     color: var(--ml-text);
     font-family: var(--ml-font);
-    font-size: 15px;
+    font-size: 1.0625rem;
     font-weight: 400;
     line-height: 1.6;
     -webkit-font-smoothing: antialiased;
@@ -44,12 +47,15 @@ h1, h2, h3, h4, h5, h6 {
 h1 { font-size: 2rem; }
 h2 { font-size: 1.5rem; }
 h3 { font-size: 1.25rem; }
-h4 { font-size: 1.0625rem; }
-h5 { font-size: 0.95rem; }
-h6 { font-size: 0.85rem; }
+h4 { font-size: 1.125rem; }
+h5 { font-size: 1rem; }
+h6 { font-size: 0.875rem; }
 
-p {
+/* La plantilla reduce .featured_content p al 0.95em. */
+p,
+.featured_content p {
     margin: 0 0 1em;
+    font-size: inherit;
 }
 
 strong, b {
@@ -259,53 +265,6 @@ header .navbar-default .navbar-nav > .active > a:focus {
 }
 
 /* ------------------------------------------------------------------
-   Portada (bloque #featured para visitantes sin sesión)
-   ------------------------------------------------------------------ */
-#featured {
-    width: 100%;
-    background: transparent;
-    margin: 0;
-    padding: 56px 0 8px;
-}
-
-#featured > .row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 32px;
-    max-width: 1180px;
-    margin: 0 auto;
-    padding-inline: 24px;
-}
-
-#featured > .row > [class^="col-"] {
-    float: none;
-    width: auto;
-    padding: 0;
-}
-
-#featured > .row > .col-md-3 {
-    flex: 0 1 220px;
-}
-
-#featured > .row > .col-md-8 {
-    flex: 1 1 420px;
-}
-
-#featured h2 {
-    font-size: 2.25rem;
-    letter-spacing: -0.03em;
-    margin-bottom: 0.4em;
-}
-
-#featured p {
-    color: var(--ml-text-muted);
-    font-size: 1.0625rem;
-    max-width: 62ch;
-    margin-bottom: 0;
-}
-
-/* ------------------------------------------------------------------
    Pie de página
    ------------------------------------------------------------------ */
 footer {
@@ -467,7 +426,7 @@ a.scrollup i {
     border: 1px solid var(--ml-border-strong);
     border-radius: var(--ml-radius-sm);
     font-family: inherit;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     line-height: 1.4;
     box-shadow: var(--ml-shadow-sm);
     transition: border-color var(--ml-transition), box-shadow var(--ml-transition);
@@ -528,7 +487,7 @@ a.scrollup i {
 .featured_content label {
     display: inline-block;
     color: var(--ml-text-soft);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     margin-bottom: 6px;
 }
@@ -575,7 +534,7 @@ a.scrollup i {
     flex-direction: column;
     gap: 6px;
     color: var(--ml-text-soft);
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 600;
     margin-bottom: 16px;
 }
@@ -593,26 +552,38 @@ a.scrollup i {
 
 /* ------------------------------------------------------------------
    Select2 (usado en la configuración del sistema)
+   La vista carga select2.css después de este archivo, así que las
+   reglas llevan .select2-container duplicado para ganar en
+   especificidad a sus alturas fijas (28px), que descentraban el texto.
    ------------------------------------------------------------------ */
-.select2-container--default .select2-selection--single {
+.select2-container.select2-container--default .select2-selection--single {
+    display: flex;
+    align-items: center;
     height: auto;
-    padding: 5px 4px;
+    min-height: calc(1rem * 1.4 + 20px);
+    padding: 0;
     background: var(--ml-surface);
     border: 1px solid var(--ml-border-strong);
     border-radius: var(--ml-radius-sm);
+    box-shadow: var(--ml-shadow-sm);
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
+.select2-container.select2-container--default .select2-selection--single .select2-selection__rendered {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 9px 34px 9px 12px;
     color: var(--ml-text);
-    line-height: 1.5;
+    font-size: 1rem;
+    line-height: 1.4;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 100%;
+.select2-container.select2-container--default .select2-selection--single .select2-selection__arrow {
     top: 0;
+    right: 6px;
+    height: 100%;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__arrow b {
+.select2-container.select2-container--default .select2-selection--single .select2-selection__arrow b {
     border-top-color: var(--ml-text-muted);
 }
 
@@ -690,7 +661,7 @@ a.scrollup i {
 .ml-theme-title {
     margin: 0 0 8px;
     color: var(--ml-text-muted);
-    font-size: 0.6875rem;
+    font-size: 0.75rem;
     font-weight: 650;
     letter-spacing: 0.07em;
     text-transform: uppercase;
@@ -831,19 +802,6 @@ a.scrollup i {
         padding-inline: 16px;
     }
 
-    #featured {
-        padding-top: 32px;
-    }
-
-    #featured > .row {
-        padding-inline: 16px;
-        gap: 16px;
-    }
-
-    #featured h2 {
-        font-size: 1.75rem;
-    }
-
     #sub-footer ul.social-network {
         justify-content: flex-start;
     }
@@ -870,30 +828,6 @@ a.scrollup i {
     clip: rect(0, 0, 0, 0);
     white-space: nowrap;
     border: 0;
-}
-
-.ml-eyebrow {
-    display: inline-block;
-    margin-bottom: 12px;
-    padding: 4px 12px;
-    background: var(--ml-accent-soft);
-    color: var(--ml-accent-text);
-    border-radius: var(--ml-radius-full);
-    font-size: 0.75rem;
-    font-weight: 650;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-}
-
-.ml-hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 26px;
-}
-
-.ml-hero-actions .button-3 + .button-3 {
-    margin-left: 0;
 }
 
 /* El menú se pega a la derecha, justo antes del selector de tema. */
@@ -949,8 +883,6 @@ header .navbar-collapse::before,
 header .navbar-collapse::after,
 header .navbar-collapse ul.navbar-nav::before,
 header .navbar-collapse ul.navbar-nav::after,
-#featured > .row::before,
-#featured > .row::after,
 footer .row::before,
 footer .row::after,
 #sub-footer .row::before,
@@ -1030,13 +962,11 @@ footer .row {
 }
 
 @media (max-width: 600px) {
+    body { font-size: 1rem; }
+
     h1 { font-size: 1.625rem; }
     h2 { font-size: 1.3rem; }
     h3 { font-size: 1.125rem; }
-
-    #featured h2 {
-        font-size: 1.5rem;
-    }
 
     /* Campos a todo el ancho: la etiqueta queda encima y el campo
        es fácil de pulsar. */
@@ -1085,10 +1015,6 @@ footer .row {
 
     .button-3 {
         white-space: normal;
-    }
-
-    .ml-hero-actions .button-3 {
-        flex: 1 1 140px;
     }
 
     #loginbox {

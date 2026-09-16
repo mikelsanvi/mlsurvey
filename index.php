@@ -54,7 +54,6 @@ if ($classview != 'MainView' && file_exists ($classviewfile)){
 <!-- css -->
 <link href="css/bootstrap.min.css" rel="stylesheet" />
 <link href="css/fancybox/jquery.fancybox.css" rel="stylesheet">
-<link href="css/flexslider.css" rel="stylesheet" />
 <link href="css/style.css" rel="stylesheet" />
 <!-- El sistema de temas va después de la plantilla: la reescribe. -->
 <link href="css/theme.css" rel="stylesheet" />
@@ -111,26 +110,6 @@ $view->addHead ();
         </div>
 	</header>
 	<!-- end header -->
-	 <?php
-	 if (!isUser()){?>
-	<!-- Portada: personalizar el texto y poner aquí el logotipo grande. -->
-	<section id="featured">
-		<div class="row">
-			<div class="col-md-8">
-				<p class="ml-eyebrow">Plataforma de consultas</p>
-	 			<h2>Participa en las consultas abiertas</h2>
-				<p>Consulta las votaciones en curso, participa con tu código
-				   y revisa los resultados de las que ya han terminado.</p>
-				<p class="ml-hero-actions">
-					<a class="button-3" href="surveys">Ver consultas</a>
-					<a class="button-3 is-secondary" href="admin">Entrar</a>
-				</p>
-			</div>
-		</div>
-	</section>
-	<?php
-	 }
-	 ?>
 <div class="featured_content">
   <div class="container">
 	<?php
@@ -206,7 +185,6 @@ $view->addHead ();
 <script src="js/jquery.fancybox-media.js"></script> 
 <script src="js/portfolio/jquery.quicksand.js"></script>
 <script src="js/portfolio/setting.js"></script>
-<script src="js/jquery.flexslider.js"></script>
 <script src="js/animate.js"></script>
 <script src="js/custom.js"></script>
 <script src="js/theme.js"></script>

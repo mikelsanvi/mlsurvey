@@ -89,7 +89,7 @@
     background: var(--ml-warning-soft);
     color: var(--ml-warning);
     border-radius: var(--ml-radius-full);
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     font-weight: 650;
     letter-spacing: 0.04em;
     text-transform: uppercase;

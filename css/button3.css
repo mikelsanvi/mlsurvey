@@ -27,12 +27,12 @@
     box-shadow: var(--ml-shadow-sm);
 
     font-family: var(--ml-font);
-    font-size: 0.9375rem;
+    font-size: 1rem;
     font-weight: 600;
     line-height: 1.25;
     letter-spacing: -0.005em;
 
-    min-height: 38px;
+    min-height: 42px;
     padding: 8px 18px;
     margin: 0;
 
