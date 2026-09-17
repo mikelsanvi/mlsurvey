@@ -10,6 +10,12 @@ DB_PORT="${DB_PORT:-3306}"
 DB_NAME="${DB_NAME:-mlsurvey}"
 DB_USER="${DB_USER:-mlsurvey}"
 
+# Tamaño del pool de workers de Apache (= conexiones persistentes a la base de datos).
+export APACHE_MAX_WORKERS="${APACHE_MAX_WORKERS:-150}"
+export APACHE_START_WORKERS="${APACHE_START_WORKERS:-25}"
+export APACHE_MAX_SPARE_WORKERS="${APACHE_MAX_SPARE_WORKERS:-75}"
+export APACHE_LISTEN_BACKLOG="${APACHE_LISTEN_BACKLOG:-1024}"
+
 # config/config.php se genera leyendo el entorno: si montas el tuyo propio, se respeta.
 if [ -f "$CONFIG_FILE" ] && ! grep -q "$MARKER" "$CONFIG_FILE" 2>/dev/null; then
     echo "[mlsurvey] config/config.php propio detectado, no se sobreescribe."
