@@ -1,4 +1,4 @@
-<?
+<?php
 require_once 'ifaces/view.php';
 require_once 'utils/dbutils.php';
 require_once 'views/surveys.php';

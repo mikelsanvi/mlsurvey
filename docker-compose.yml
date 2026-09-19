@@ -54,6 +54,15 @@ services:
       PROXY_PORT: ${PROXY_PORT:-}
       # 0: error, 1: warn, 2: info, 3: debug. En produccion 0.
       LOG_LEVEL: ${LOG_LEVEL:-0}
+      # Envio de correo (antes en la base de datos, ahora en config/config.php).
+      EMAIL_METHOD: ${EMAIL_METHOD:-SMTP}
+      EMAIL_SERVER: ${EMAIL_SERVER:-}
+      EMAIL_PORT: ${EMAIL_PORT:-587}
+      EMAIL_USER: ${EMAIL_USER:-}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-}
+      # tls (STARTTLS) o ssl.
+      EMAIL_ENCRYPTION: ${EMAIL_ENCRYPTION:-tls}
       # Administrador inicial: se crea al arrancar si no existe.
       ADMIN_USER: ${ADMIN_USER:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}

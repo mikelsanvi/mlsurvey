@@ -1,4 +1,5 @@
 <?php
+require_once 'include/config.php';
 //0: error, 1: warn, 2: info, 3: debug
 const LOGGER_ERROR = 0;
 const LOGGER_WARN = 1;
