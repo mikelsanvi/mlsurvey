@@ -60,7 +60,10 @@ if ($classview != 'MainView' && file_exists ($classviewfile)){
 <link href="css/theme.css" rel="stylesheet" />
 <link href="css/button3.css" rel="stylesheet" />
 <link href="css/ui.css" rel="stylesheet" />
-<script src="js/jquery.js"></script> 
+<!-- Sustituyen a alert() y confirm(), que no siguen el tema. -->
+<link href="css/dialog.css" rel="stylesheet" />
+<script src="js/mldialog.js"></script>
+<script src="js/jquery.js"></script>
 <?php
 $view->addHead ();
 ?>

@@ -3,6 +3,7 @@ require_once 'ifaces/view.php';
 require_once 'utils/user.php';
 require_once 'include/fileparams.php';
 require_once 'utils/fileutils.php';
+require_once 'include/icons.php';
 
 enum SurveyJavascript {
         case NoJavascript;
@@ -127,18 +128,32 @@ class SurveyManage extends View {
 <div class="card-table-container">
             <table class="card-like-table ml-stack" id="surveystable">
                 <thead><tr>
-                    <td>Consulta</td><td>Fecha inicio</td><td>Fecha fin</td><td>Seleccionar</td>
+                    <td>Consulta</td><td>Fecha inicio</td><td>Fecha fin</td><td class="ml-row-actions">Acciones</td>
                 </tr></thead>
                 <tbody>
                 <?php
                 while ($row = $query->fetch ()){
                     $id = $row['surveyid'];
+                    $name = $row['surveyname'];
                     ?>
                     <tr id="<?= $id; ?>">
-                        <td><span class="username" id="sv-<?= $id; ?>"><?= $row['surveyname']?></span></td>
+                        <td><span class="username" id="sv-<?= $id; ?>"><?= $name ?></span></td>
                         <td data-label="Fecha inicio"><?= $row['dstart'] ?></td>
                         <td data-label="Fecha fin"><?= $row['dend'] ?></td>
-                        <td><input type="radio" name="surveyid" value="<?= $id; ?>" id="rb-<?= $id; ?>"></td>
+                        <td class="ml-row-actions">
+                            <button type="submit" class="button-3 is-ghost is-icon"
+                                name="<?= self::MANAGEACTION ?>" value="Modificar"
+                                id="modify-<?= $id; ?>" onclick="return pick_survey (<?= $id; ?>);"
+                                title="Modificar" aria-label="Modificar la consulta <?= htmlspecialchars ($name); ?>">
+                                <?= mlIcon ('edit'); ?>
+                            </button>
+                            <button type="submit" class="button-3 is-ghost is-icon is-danger"
+                                name="<?= self::MANAGEACTION ?>" value="Eliminar"
+                                id="delete-<?= $id; ?>" onclick="return confirm_delete (<?= $id; ?>, this);"
+                                title="Eliminar" aria-label="Eliminar la consulta <?= htmlspecialchars ($name); ?>">
+                                <?= mlIcon ('trash'); ?>
+                            </button>
+                        </td>
                     </tr>
                     <?php
                 }
@@ -147,20 +162,9 @@ class SurveyManage extends View {
                 </tbody>
             </table>
 </div>
-<script type="text/javascript">
-                const miTabla = document.getElementById("surveystable");
-
-                miTabla.addEventListener("click", function(evento) {
-                    // Encuentra la fila (tr) más cercana al elemento que recibió el clic
-                    const fila = evento.target.closest("tr");
-  
-                    if (!fila) {
-                        return;
-                    }
-                    var userid = 'rb-' + fila.id;
-                    document.getElementById (userid).checked = true;    
-                });
-            </script>
+<!-- Los botones de cada fila escriben aquí sobre qué consulta actúan:
+     el servidor sigue leyendo $_REQUEST['surveyid']. -->
+<input type="hidden" name="surveyid" id="selectedsurvey" value="">
             <?php
         }
         catch (Exception $e){
@@ -174,36 +178,38 @@ class SurveyManage extends View {
     private function showControls (){
        ?>
        <script type="text/javascript">
-        function validate_modify (){
-            var selectedradio = document.querySelector('input[name="surveyid"]:checked');
-            if (!selectedradio){
-                alert ('No has seleccionado ninguna para modificar');
-                return false;
-            }
+        /* Cada fila dice sobre qué consulta actúa antes de enviar. */
+        function pick_survey (id){
+            document.getElementById ('selectedsurvey').value = id;
             return true;
         }
-        function confirm_delete (){
-            var selectedradio = document.querySelector('input[name="surveyid"]:checked');
-            if (!selectedradio){
-                alert ('No has seleccionado ninguna para eliminar');
-                return false;
-            }
-            var element =  'sv-' + selectedradio.value;
-            var surveyname = document.getElementById (element).innerText;
-            return confirm ("¿Seguro que quieres eliminar la consulta " + surveyname + 
-            "?\nEsto no se puede deshacer");
+        /* El diálogo del tema no detiene la ejecución como confirm(), así
+           que este onclick siempre frena el envío y, si la respuesta es
+           que sí, vuelve a pulsar el mismo botón: la segunda vez pasa de
+           largo y el formulario se envía con su name y su value. */
+        function confirm_delete (id, boton){
+            if (boton.dataset.confirmado === '1')
+                return true;
+
+            pick_survey (id);
+            var surveyname = document.getElementById ('sv-' + id).innerText;
+            mlDialog.confirm ({
+                title: "Eliminar consulta",
+                message: "¿Seguro que quieres eliminar la consulta " + surveyname +
+                    "?\nEsto no se puede deshacer.",
+                confirmText: "Eliminar",
+                danger: true
+            }).then (function (confirmado){
+                if (!confirmado)
+                    return;
+                boton.dataset.confirmado = '1';
+                boton.click ();
+            });
+            return false;
         }
         </script>
        <p>
        <input type="submit" class="button-3" name="<?= self::MANAGEACTION ?>" id="add" value="Añadir">
-       <?php
-       if ($this->surveyscount > 0){
-        ?>
-       <input type="submit" class="button-3" name="<?= self::MANAGEACTION ?>" onclick="return validate_modify ();" id="modify" value="Modificar">
-       <input type="submit" class="button-3" name="<?= self::MANAGEACTION ?>" onclick="return confirm_delete();" id="delete" value="Eliminar">
-       <?php
-       }
-       ?>
         </p>
         <?php
        
@@ -323,7 +329,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
         function validate_question (id){
             var e = hugerte.get("desc-q-" + id);
             if (e.getContent () == ""){
-                alert ("La descripcióm de la pregunta " + id + 
+                mlDialog.alert ("La descripcióm de la pregunta " + id + 
                 " no puede estar vacío.");
                 e.focus ({preventScroll: false, focusVisible: true});
                 return false;
@@ -333,7 +339,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             e = document.getElementById ("opt-" + id + "-" + opt);
             while (e != null){
                 if (e.value == ""){
-                    alert ("La opción " + opt + " de la pregunta " + id +
+                    mlDialog.alert ("La opción " + opt + " de la pregunta " + id +
                         " no puede estar vacía."
                     );
                     e.focus ({preventScroll: false, focusVisible: true});
@@ -355,35 +361,35 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
            
             
             if (survey.value == ""){
-                alert ("El nombre de la consulta no puede estar vacío");
+                mlDialog.alert ("El nombre de la consulta no puede estar vacío");
                 survey.focus ({preventScroll: false, focusVisible: true});
                 return false;
             }
 
             if (desc.getContent () == ""){
-                alert ("La descripción de la consulta no puede estar vacía.");
+                mlDialog.alert ("La descripción de la consulta no puede estar vacía.");
                 desc.focus ({preventScroll: false, focusVisible: true});
                 return false;
             }
 
             if (start.value == ""){
-                alert ("Tienes que indicar una fecha de inicio.");
+                mlDialog.alert ("Tienes que indicar una fecha de inicio.");
                 start.focus ({preventScroll: false, focusVisible: true});
                 return false;
             }
             if (end.value == ""){
-                alert ("Tienes que indicar una fecha de finalización.");
+                mlDialog.alert ("Tienes que indicar una fecha de finalización.");
                 end.focus ({preventScroll: false, focusVisible: true});
                 return false;
             }
 
                         
             if (startdate <= today){
-                alert ('La fecha de inicio debe ser posterior a ahora.')
+                mlDialog.alert ('La fecha de inicio debe ser posterior a ahora.')
                 return false;
             }
             if (enddate <= startdate){
-                alert ("La fecha de fin debe ser posterior a la de inicio.")
+                mlDialog.alert ("La fecha de fin debe ser posterior a la de inicio.")
                 return false;
             }
             var question = 1;
@@ -430,13 +436,13 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
                 if (fileItems.length > 0){
                     e.preventDefault ();
                     if (fileItems.length > 1){
-                        alert ("Solo se admite un archivo.")
+                        mlDialog.alert ("Solo se admite un archivo.")
                         return;
                     }
                     fileItems.forEach ((item, i) => {
                         if (item.kind === "file") {
                             if (item.type != "application/pdf"){
-                                alert ("El archivo no está en formato PDF.")
+                                mlDialog.alert ("El archivo no está en formato PDF.")
                                 return;
                             }
                             const file = item.getAsFile();
@@ -588,7 +594,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
 
         function addquestion(questionid) {
             if (!validate_question (questionid)){
-                alert ("Debes completar los datos de la pregunta antes de añadir otra.")
+                mlDialog.alert ("Debes completar los datos de la pregunta antes de añadir otra.")
                 return;
             }
             var nextquestionid = questionid + 1;
@@ -699,7 +705,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
                 optionid
             );
             if (!validate_question (questionid)){
-                alert ("Debes completar todos los datos de la pregunta antes de añadir otra opción");
+                mlDialog.alert ("Debes completar todos los datos de la pregunta antes de añadir otra opción");
                 return false;
             }
             var lastid = optionid + 1;

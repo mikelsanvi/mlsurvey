@@ -69,6 +69,22 @@
     font-weight: 600;
 }
 
+/* --- Acciones por fila -------------------------------------------
+   Columna estrecha pegada al borde derecho: la fila manda, los botones
+   acompañan. width:1% con nowrap es el truco de toda la vida para que
+   la celda ocupe sólo lo que miden sus botones. */
+.card-like-table td.ml-row-actions,
+.card-like-table thead td.ml-row-actions {
+    width: 1%;
+    padding-left: 8px;
+    text-align: right;
+    white-space: nowrap;
+}
+
+.card-like-table td.ml-row-actions .button-3 + .button-3 {
+    margin-left: 4px;
+}
+
 /* --- Menú lateral de la zona privada ----------------------------- */
 #usermenutable {
     width: 100%;
@@ -219,26 +235,25 @@
         width: 100%;
     }
 
-    /* Tablas de gestión: la fila entera selecciona el radio. */
-    .card-like-table.ml-stack tr:has(input[type="radio"]) {
-        cursor: pointer;
-    }
-
-    .card-like-table.ml-stack tr:has(input[type="radio"]:checked) {
-        border-color: var(--ml-accent);
-        box-shadow: inset 3px 0 0 var(--ml-accent), var(--ml-shadow-sm);
-    }
-
-    .card-like-table.ml-stack td:has(> input[type="radio"]) {
+    /* Tablas de gestión: las acciones se anclan en la esquina de la
+       tarjeta, no a lo ancho como el resto de botones apilados. */
+    .card-like-table.ml-stack td.ml-row-actions {
         position: absolute;
-        top: 14px;
-        right: 14px;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 4px;
         width: auto;
         padding: 0;
     }
 
-    .card-like-table.ml-stack tr:has(input[type="radio"]) td:first-child {
-        padding-right: 32px;
+    .card-like-table.ml-stack td.ml-row-actions > .button-3 {
+        width: 38px;
+    }
+
+    /* Hueco para que el título no pase por debajo de los botones. */
+    .card-like-table.ml-stack tr:has(td.ml-row-actions) td:first-child {
+        padding-right: 92px;
     }
 
     /* La de usuarias sólo tiene nombre: sin hueco bajo el título. */

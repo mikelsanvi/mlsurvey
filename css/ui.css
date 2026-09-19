@@ -492,6 +492,62 @@ a.scrollup i {
     margin-bottom: 6px;
 }
 
+/* --- Formulario de etiqueta y campo ------------------------------
+   Las vistas escribían «Etiqueta: <input>» suelto dentro de un <p>, así
+   que cada campo arrancaba donde terminaba su texto y la columna salía
+   en diagonal.
+
+   Un campo por fila, y todos empezando a la misma altura. Para las dos
+   cosas a la vez hace falta que las etiquetas compartan una única
+   columna: si cada fila fuese su propia rejilla, cada una mediría según
+   su texto y volveríamos al principio. Por eso la rejilla es .ml-form y
+   .ml-form-row desaparece del layout con display:contents, dejando que
+   sus etiquetas y campos sean celdas de la rejilla de arriba.
+
+   La fila sigue existiendo en el HTML, así que si un navegador no
+   entendiera display:contents, cada campo seguiría en su línea; sólo se
+   perdería la alineación entre filas. */
+.featured_content .ml-form {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    align-items: center;
+    gap: 14px 16px;
+    max-width: 560px;
+    margin-bottom: 20px;
+}
+
+.featured_content .ml-form-row {
+    display: contents;
+}
+
+.featured_content .ml-form label {
+    margin-bottom: 0;
+}
+
+.featured_content .ml-form input,
+.featured_content .ml-form select,
+.featured_content .ml-form textarea {
+    width: 100%;
+}
+
+/* Botonera, avisos y demás: ocupan la fila entera. */
+.featured_content .ml-form > .ml-form-wide {
+    grid-column: 1 / -1;
+    margin: 0;
+}
+
+/* En móvil no hay sitio para dos columnas: la etiqueta va encima. */
+@media (max-width: 600px) {
+    .featured_content .ml-form {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 4px;
+    }
+
+    .featured_content .ml-form-row + .ml-form-row label {
+        margin-top: 10px;
+    }
+}
+
 /* Casillas y radios siguen el acento del tema. */
 .featured_content input[type="checkbox"],
 .featured_content input[type="radio"] {

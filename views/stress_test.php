@@ -105,7 +105,7 @@ class StressTest extends View {
             function validateCount (){
                 const count = document.getElementById ("testcount");
                 if (count.value == ""){
-                    alert ("Debes introducir un número.");
+                    mlDialog.alert ("Debes introducir un número.");
                     count.focus ({preventScroll: false, focusVisible: true});
                     return false;
                 }
