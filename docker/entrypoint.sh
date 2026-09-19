@@ -23,18 +23,32 @@ else
     echo "[mlsurvey] generando config/config.php desde las variables de entorno."
     cat > "$CONFIG_FILE" <<'PHPEOF'
 <?php
-/* Fichero generado por el entrypoint de docker. No editar: usa variables de entorno. */
-$db_host   = getenv('DB_HOST')   ?: 'db';
-$db_name   = getenv('DB_NAME')   ?: 'mlsurvey';
-$db_user   = getenv('DB_USER')   ?: 'mlsurvey';
-$db_pass   = getenv('DB_PASSWORD') ?: '';
-$db_port   = getenv('DB_PORT')   ?: 3306;
-$db_prefix = getenv('DB_PREFIX') ?: '';
+const CONFIG = [
+"db_host" => getenv('DB_HOST')   ?: 'db',
+"db_name" => getenv('DB_NAME')   ?: 'mlsurvey',
+"db_user"=> getenv('DB_USER')   ?: 'mlsurvey',
+"db_pass"=> getenv('DB_PASSWORD') ?: '',
+"db_port"=>getenv('DB_PORT')   ?: 3306,
 
-$proxy_path = getenv('PROXY_PATH') ?: '';
-$proxy_port = getenv('PROXY_PORT') ?: '';
+"db_prefix"=>getenv('DB_PREFIX') ?: '',
 
-$log_level = (int) (getenv('LOG_LEVEL') !== false ? getenv('LOG_LEVEL') : 0);
+"proxy_path"=>getenv('PROXY_PATH') ?: '',
+"proxy_port"=>getenv('PROXY_PORT') ?: '',
+
+"log_level"=>(int) (getenv('LOG_LEVEL') !== false ? getenv('LOG_LEVEL') : 0),
+
+
+"email_method" => getenv('EMAIL_METHOD') ?: 'SMTP', 
+"email_server" => getenv('EMAIL_SERVER') ?: '',
+"email_port" => (int) (getenv('EMAIL_PORT') !== false ? getenv('EMAIL_PORT') : 587),
+"email_user" => getenv('EMAIL_USER') ?: '',
+"email_password" => getenv('EMAIL_PASSWORD') ?: '',
+"email_from" => getenv('EMAIL_FROM') ?: '',
+"email_encryption" => getenv('EMAIL_ENCRYPTIO') ?: 'tls'
+
+
+"ml_stresstest" => false,
+];
 PHPEOF
     chown www-data:www-data "$CONFIG_FILE"
     chmod 640 "$CONFIG_FILE"

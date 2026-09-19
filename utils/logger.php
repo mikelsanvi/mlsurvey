@@ -7,11 +7,11 @@ const LOGGER_DEBUG = 3;
 const LEVEL_DESC = ['ERROR: ', 'WARN: ', 'INFO: ', 'DEBUG: '];
 
 function logMessage ($severity, $message){
-    include_once 'config/config.php';
-    if (!isset ($log_level))
-        $log_level = 0;
+    $level = 0;
+    if (isset (Config::PARAMS["log_level"]))
+        $level = Config::PARAMS["log_level"];
     
-    if ($log_level < $severity)
+    if ($level < $severity)
         return;
 
     error_log (LEVEL_DESC[$severity] . $message);

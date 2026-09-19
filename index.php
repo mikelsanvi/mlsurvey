@@ -4,6 +4,7 @@ include_once 'utils/session.php';
 include_once 'utils/logger.php';
 include_once 'ifaces/view.php';
 include_once 'utils/user.php';
+require_once "include/config.php";
 startSession ();
 $viewsfolder = 'views';
 $classviewfile = $viewsfolder;
@@ -155,9 +156,6 @@ $view->addHead ();
 						<p>
 							<span>Special thanks to: <a href="https://github.com/PHPMailer/PHPMailer" target="_blank">PHPMailer</a>
 						and <a href="https://github.com/hugerte/hugerte" target="_blank">HugeRTE</a></span>
-						</p>
-						<p>
-							<span>Original theme: &copy; Target 2014 All right reserved. By </span><a href="http://webthemez.com" target="_blank">WebThemez</a>
 						</p>
 					</div>
 				</div>

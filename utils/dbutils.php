@@ -19,10 +19,13 @@ function dbConn (){
     if ($dbconn !== null){
         return $dbconn;
     }
-
-    include 'config/config.php';
-    $dbconn = new MLPDO ('mysql:dbname=' . $db_name . ';host=' . $db_host . ';port=' . $db_port,
-        $db_user, $db_pass, array(
+    $port = 3306;
+    if (isset (Config::PARAMS["db_port"]))
+        $port = Config::PARAMS["db_port"];
+    
+    $dbconn = new MLPDO ('mysql:dbname=' . Config::PARAMS["db_name"] . 
+        ';host=' . Config::PARAMS["db_host"] . ';port=' . $port,
+        Config::PARAMS["db_user"], Config::PARAMS["db_pass"], array(
             MLPDO::ATTR_ERRMODE => MLPDO::ERRMODE_EXCEPTION,
             MLPDO::ATTR_PERSISTENT => true,
             // Si la base de datos no responde, fallar pronto en vez de acumular workers bloqueados.
@@ -33,7 +36,9 @@ function dbConn (){
     if ($dbconn->inTransaction ()){
         $dbconn->rollBack ();
     }
-
-    $dbconn->setPrefix ($db_prefix);
+    if (isset (Config::PARAMS["db_prefix"]))
+        $dbconn->setPrefix (Config::PARAMS["db_prefix"]);
+    else
+        $dbconn->setPrefix ("");
     return $dbconn;
 }

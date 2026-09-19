@@ -7,3 +7,4 @@ test/
 img/old/
 files/
 views/test*
+.env

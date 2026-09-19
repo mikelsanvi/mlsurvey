@@ -57,12 +57,12 @@ class SystemManage extends View {
         if (is_null ($emailconfig['emailmethod']))
             $emailconfig['emailmethod'] = 0;
         
-        $emailconfig['emailcmdparams'] = $row['emailcmdparams'];
+        /*$emailconfig['emailcmdparams'] = $row['emailcmdparams'];
         $emailconfig['emailserver'] = $row['emailserver'];
         $emailconfig['emailuser'] = $row['emailuser'];
         $emailconfig['emailpasswd'] = $row['emailpasswd'];
         $emailconfig['emailsecurity'] = $row['emailsecurity'];
-        $emailconfig['emailport'] = $row['emailport'];
+        $emailconfig['emailport'] = $row['emailport'];*/
         
         $query->closeCursor ();
         $timezoneindex = -1;
@@ -157,7 +157,7 @@ class SystemManage extends View {
 				"cualquiera podrá participar en las consultas.\n" +
 				"¿Confirmas que esto es así?");
 		}
-                var element = document.getElementById ("emailfrom");
+                /*var element = document.getElementById ("emailfrom");
                 if (element.value == ""){
                     alert ("La dirección del remitente no es válida.")
                     element.focus ({preventScroll: false, focusVisible: true});
@@ -178,7 +178,7 @@ class SystemManage extends View {
                     alert ("Debes indicar un método válido para el envío de mensajes.");
                     $("#emailmethod").select2 ('open');
                     return false;
-                }
+                }*/
 
                 element = document.getElementById ("sendtest");
                 if (element.checked){
@@ -193,9 +193,9 @@ class SystemManage extends View {
             }
 
             $(document).ready(function() {
-                var selected = <?= $emailconfig['emailmethod']; ?>;
-                $(".searchbox").select2();
                 
+                $(".searchbox").select2();
+                /*var selected = <?= $emailconfig['emailmethod']; ?>;
                 var $emailmethod = $("#emailmethod");
                 $(".nosearchbox").select2 ({
                     minimumResultsForSearch: Infinity
@@ -207,7 +207,7 @@ class SystemManage extends View {
                 if (selected != 0){
                     $("#emailmethod").val (selected);
                     $("#emailmethod").trigger('change');
-                }
+                }*/
 
                 const sendtest = document.getElementById('sendtest');
 
@@ -242,54 +242,7 @@ class SystemManage extends View {
             <input type="text" id="alloweddomains" name="alloweddomains"
                 value="<?= $alloweddomains; ?>"
                 placeholder="Separados por espacios. Vacío indica sin restricciones."></p>
-            <h4>Configuración de correo</h4>
-            <p><label for="emailfrom">Remitente:</label>
-            <input type="email" name="emailfrom" id="emailfrom" required
-                value="<?= $emailconfig['emailfrom']; ?>"></p>
-            <p><label for="emailmethod">Método:</label>
-            <select name="emailmethod" id="emailmethod" class="nosearchbox"
-                style="width: 25%;">
-                <?php
-                foreach (MLMailer::METHODS as $key => $method) {
-                    echo ("<option value=\"{$key}\">{$method}</option>");
-                }
-                ?>
-            </select></p>
-            <div class="option" id="sendmaildiv" style="display: none;">
-                <p><strong>Recuerda que hay que tener <em>sendmail</em> instalado y configurado 
-                    en el servidor.</strong></p>
-                <!--<p><label for="emailcmdparams">Parámetros:</label>
-                <input type="text" id="emailcmdparams" name="emailcmdparams"
-                value="<?= $emailconfig['emailcmdparams']; ?>">-->
-                </p>
-            </div>
-            <div class="option" id="smtpdiv" style="display: none;">
-                <p><label for="emailserver">Servidor SMTP:</label>
-                <input type="text" id="emailserver" name="emailserver"
-                value="<?= $emailconfig['emailserver']; ?>"></p>
-                <p><label for="emailuser">Usuario:</label>
-                <input type="text" id="emailuser" name="emailuser"
-                value="<?= $emailconfig['emailuser']; ?>"></p>
-                <p><label for="emailpasswd">Clave:</label>
-                <input type="password" id="emailpasswd" name="emailpasswd"
-                value="<?= $emailconfig['emailpasswd']; ?>"></p>
-                <p><label for="emailport">Puerto:</label>
-                <input type="number" id="emailport" name="emailport"
-                value="<?= $emailconfig['emailport']; ?>"></p>
-                <p><label for="emailsecurity">Seguridad SMTP:</label>
-                <select class="nosearchbox" name="emailsecurity" id="emailsecurity"
-                    style="width: 25%;">
-                    <?php
-                    foreach (MLMailer::ENCRYPTION as $key => $value) {
-                        ?>
-                        <option value="<?= $key; ?>" <?= $key == $emailconfig['emailsecurity']?'selected':''; ?>>
-                            <?= $value; ?></option>
-                        <?php
-                    }
-                    ?>
-                </select>
-                </p>
-            </div>
+            
             <div class="option" id="mailtest" style="display: none;">
                 <p><label for="sendtest">Enviar mensaje de prueba:</label>
                 <input type="checkbox" id="sendtest" name="sendtest"></p>
@@ -313,37 +266,14 @@ class SystemManage extends View {
         unset ($_SESSION['configid']);
         $dbconn = dbConn ();
         $query = $dbconn->prepare ("UPDATE {SystemConfig} set " .
-            "timezone = :timezone, alloweddomains = :domain, " .
-            "emailfrom = :emailfrom, " .
-            "emailmethod = :emailmethod, " .
-            "emailcmdparams = :emailcmdparams, " .
-            "emailserver = :emailserver, " .
-            "emailuser = :emailuser, " .
-            "emailpasswd = :emailpasswd, " .
-            "emailsecurity = :emailsecurity, " .
-            "emailport = :emailport " .
+            "timezone = :timezone, alloweddomains = :domain " .
             "WHERE configid = :id");
         $query->bindParam (":id", $cid, PDO::PARAM_INT);
         $query->bindParam (":timezone", $timezones[$_REQUEST['timezone']],
             PDO::PARAM_STR);
         $query->bindParam (":domain", $_REQUEST['alloweddomains'],
             PDO::PARAM_STR);
-        $query->bindParam (":emailfrom", $_REQUEST['emailfrom'],
-            PDO::PARAM_STR);
-        $query->bindParam (":emailmethod", $_REQUEST['emailmethod'],
-            PDO::PARAM_INT);
-        $query->bindParam (":emailcmdparams", $_REQUEST['emailcmdparams'],
-            PDO::PARAM_STR);
-        $query->bindParam (":emailserver", $_REQUEST['emailserver'],
-            PDO::PARAM_STR);
-        $query->bindParam (":emailuser", $_REQUEST['emailuser'],
-            PDO::PARAM_STR);
-        $query->bindParam (":emailpasswd", $_REQUEST['emailpasswd'],
-            PDO::PARAM_STR);
-        $query->bindParam (":emailsecurity", $_REQUEST['emailsecurity'],
-            PDO::PARAM_STR);
-        $query->bindParam (":emailport", $_REQUEST['emailport'],
-            PDO::PARAM_INT);
+        
 
         $query->execute ();
 

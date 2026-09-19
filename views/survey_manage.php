@@ -2,6 +2,7 @@
 require_once 'ifaces/view.php';
 require_once 'utils/user.php';
 require_once 'include/fileparams.php';
+require_once 'utils/fileutils.php';
 
 enum SurveyJavascript {
         case NoJavascript;
@@ -1166,21 +1167,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
 
     private function deldir ($surveyid) {
         $src = FileParams::FILE_DIR . $surveyid;
-        if (file_exists($src)) {
-            $dir = opendir($src);
-            while (false !== ($file = readdir($dir))) {
-                if (($file != '.') && ($file != '..')) {
-                    $full = $src . '/' . $file;
-                    if (is_dir($full)) {
-                        $this->deldir($full);
-                    } else {
-                        unlink($full);
-                    }
-                }
-            }
-            closedir($dir);
-            rmdir($src);
-        }
+        delDir ($src);
     }
 
     private function mvdir ($orig, $dest){

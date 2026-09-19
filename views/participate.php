@@ -12,7 +12,7 @@ class Participate extends View {
     public const ACTION = "Enviar";
     public const PID = "pid";
     public const KEY = "auth";
-
+    public bool $istest = false;
     //This const should be remove in non alpha versions.
     private const TESTID = 0;
 
@@ -53,6 +53,10 @@ class Participate extends View {
 
         $pid = $_REQUEST[self::PID];
         $key = $_REQUEST[self::KEY];
+        if (isset (Config::PARAMS['ml_stresstest']) && Config::PARAMS['ml_stresstest']
+             && $_REQUEST["t"])
+            $this->istest = true;
+
         clearSessionVariables ();
         
 
@@ -61,9 +65,18 @@ class Participate extends View {
         try {
             $db = dbConn ();
             
-            if (!$this->getEmail ($db, $pid, $code)){
+            if (!$this->getEmail ($db, $pid, $code) && !$this->istest){
                 echo ("<p><em>La solicitud proporcionada no existe o ha caducado.</em></p>");
                 return;
+            }
+            else if ($this->istest){
+                if (!$this->getTestSurvey ($db, $pid, $code)){
+                    echo ("<p><em>La solicitud proporcionada no existe o ha caducado.</em></p>");
+                    return;
+                }
+                $_SESSION['surveyid'] = $this->surveyid;
+                $_SESSION['participantid'] = self::TESTID;
+                $this->showSurvey ($db, $this->surveyid, self::TESTID);
             }
             //This block should be removed in non alpha versions
             /*if ($email == "prueba@mierda.cow" && $code = "123456"){
@@ -160,7 +173,7 @@ class Participate extends View {
         $surveyid = $_SESSION['surveyid'];
         $participantid = $_SESSION['participantid'];
 
-        //This block should be remove in non alpha versions
+        
         if ($participantid == self::TESTID){
             $privkey = false;
         }
@@ -206,14 +219,15 @@ class Participate extends View {
                     else {
                         $toptions = $_REQUEST["topt-" . $questionid];
                         $responsearray[$questionid] = array();
+                        $responses = 0;
                         for ($i = 1; $i <= $toptions; $i++){
                             if (isset ($_REQUEST["op-" . $questionid . "-" . $i]))
                                 $responsearray[$questionid][$i] = 1;
-                            if ($optional == 0 && empty ($responsearray[$questionid])){
-                                echo ("<p><strong>Error. Hay preguntas obligatioras no respondidas.</strong></p>");
-                                $questions->closeCursor ();
-                                return;
-                            }
+                        }
+                        if ($optional == 0 && empty ($responsearray[$questionid])){
+                            echo ("<p><strong>Error. Hay preguntas obligatioras no respondidas.</strong></p>");
+                            $questions->closeCursor ();
+                            return;
                         }
                     }
                 }
@@ -292,6 +306,20 @@ class Participate extends View {
             return false;
         $row = $query->fetch ();
         $this->email = decrypt (base64_decode ($row['participant']), $code);
+        $this->surveyid = $row['surveyid'];
+        return true;
+    }
+
+    private function getTestSurvey ($db, $pid, $code){
+        $hcode = hash ('sha256', $code);
+        $query = $db->prepare ("SELECT surveyid FROM {StressTest} " . 
+            "WHERE participationid = :pid AND participationkey = :pk");
+        $query->bindParam (":pid", $pid, PDO::PARAM_INT);
+        $query->bindParam (":pk", $hcode, PDO::PARAM_STR);
+        $query->execute ();
+         if ($query->rowCount () == 0)
+            return false;
+        $row = $query->fetch ();
         $this->surveyid = $row['surveyid'];
         return true;
     }

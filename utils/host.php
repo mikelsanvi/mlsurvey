@@ -1,14 +1,13 @@
 <?php
 
 function getURL (){
-    include 'config/config.php';
     $server = rtrim ($_SERVER['HTTP_HOST'], "/");
-    if (empty ($proxy_port)){
-         $server .= ":" . $proxy_port . "/";
+    if (!empty (Config::PARAMS["proxy_port"])){
+         $server .= ":" . Config::PARAMS["proxy_port"] . "/";
     }
     else{
          $server .= "/";
     }
     return (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . 
-         $server . $proxy_path;
+         $server . Config::PARAMS["proxy_path"];
 }

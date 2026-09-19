@@ -8,8 +8,8 @@ require_once 'utils/host.php';
 
 class MLMailer extends PHPMailer {
     public const NO_METHOD = 0;
-    public const SMTP_METHOD = 1;
-    public const SENDMAIL_METHOD = 2;
+    public const SMTP_METHOD = "SMTP";
+    public const SENDMAIL_METHOD = "Sendmail";
 
     public const METHODS = [
         self::NO_METHOD => '',
@@ -24,7 +24,7 @@ class MLMailer extends PHPMailer {
     ];
     private $m_from = "";
     public function configure (){
-        $db = dbConn ();
+        /*$db = dbConn ();
         try {
             $query = $db->prepare ("SELECT * FROM {SystemConfig} LIMIT 1");
             $query->execute ();
@@ -53,18 +53,31 @@ class MLMailer extends PHPMailer {
         }
         catch (Exception $e){
             throw $e;
+        }*/
+        $method = Config::PARAMS["email_method"];
+        $this->m_from = Config::PARAMS["email_from"];
+        $this->CharSet = self::CHARSET_UTF8;
+        $this->Encoding = self::ENCODING_BASE64;
+         if ($method == self::SMTP_METHOD){
+            $this->configSMTP ();
+        }
+        else if ($method == self::SENDMAIL_METHOD){
+            $this->configSendmail ();
+        }
+        else {
+            throw new Exception("Unkown email method configured. Method: {$method}.");
         }
     }
 
-    private function configSMTP ($config){
+    private function configSMTP (){
         $this->isSMTP ();
         //$this->SMTPDebug = SMTP::DEBUG_SERVER;
-        $this->Host = $config['emailserver'];
-        $this->Port = $config['emailport'];
+        $this->Host = Config::PARAMS["email_server"];
+        $this->Port = Config::PARAMS["email_port"];
         $this->SMTPAuth = true;
-        $this->Username = $config['emailuser'];
-        $this->Password = $config['emailpasswd'];
-        $this->SMTPSecure = $config['emailsecurity'];
+        $this->Username = Config::PARAMS["email_user"];
+        $this->Password = Config::PARAMS["email_password"];
+        $this->SMTPSecure = Config::PARAMS["email_encryption"];
     }
 
     private function configSendmail (){
@@ -77,9 +90,9 @@ class MLMailer extends PHPMailer {
         foreach ($recipients as $key => $address) {
             $this->addAddress (trim($address));
         }
-        $this->Subject = "Mensaje de prueba de ML";
+        $this->Subject = "Mensaje de prueba de MLSurvey";
         //This could be better in an external file or something
-        $this->Body = "Es un mensaje de prueba de Menos Lectivas";
+        $this->Body = "Es un mensaje de prueba de NLSurvey";
 
         if (!$this->send ()){
             throw new Exception("Error {$this->ErrorInfo} sending test email.");

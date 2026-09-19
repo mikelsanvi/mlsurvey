@@ -147,7 +147,9 @@ class GetCode extends View {
 
             $code = random_bytes (32);
             
-
+            if ($this->checkParticipation ($db, $participant)){
+                return;
+            }
             $passwd = hash ('sha256', $code);
             $participant = base64_encode (encrypt ($email, $code));
             $query = $db->prepare ("INSERT into {Participation} (participant, surveyid, participationkey) " .
@@ -186,5 +188,23 @@ class GetCode extends View {
         }
         echo ("<p><strong>La dirección de correo proporcionada no es de un dominio autorizado.</strong></p>");
         return false;
+    }
+
+    private function checkParticipation ($db, $participant, $sid){
+        $ret = false;
+        $query = $db->prepare ("SELECT 1 FROM {Participation} WHERE 
+            participant = :part AND surveyid = :sid
+            AND participationdate > DATE_SUB(NOW(), INTERVAL 1 HOUR)");
+        $query->bindParam (":part", $participant, PDO::PARAM_STR);
+        $query->bindParam (":sid", $sid, PDO::PARAM_INT);
+        $query->execute ();
+        if ($query->rowCount () > 0){
+            echo ("<p><strong>Ya existe una peticion de participación 
+                para esta consulta con la dirección de correo indicada </strong></p>");
+            echo ("Podrás realizar una nueva petición en una hora.");
+            $ret = true;
+        }
+        $query->closeCursor ();
+        return $ret;
     }
 }

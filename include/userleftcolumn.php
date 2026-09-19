@@ -8,7 +8,14 @@
             <tbody>
                 <?php
                 include_once 'utils/user.php';
-                if (isAdmin ()){?>
+                if (isAdmin ()){
+                    if (isset (Config::PARAMS["ml_stresstest"]) && 
+                        Config::PARAMS["ml_stresstest"]){
+                        ?>
+                        <tr><td><a href="stress_test">Test de stress</a></td></tr>
+                        <?php
+                    }
+                    ?>
             <tr><td><a href="user_manage">Gestión de usuarias</a></td></tr>
             <tr><td><a href="system_manage">Configurar sistema</a></td></tr>
             <?php

@@ -21,12 +21,13 @@ function decrypt (#[\SensitiveParameter]string $encrypted, #[\SensitiveParameter
 }
 
 function url_base64_encode (#[\SensitiveParameter] string $data):string {
-    $encoded = strtr(base64_encode($data), '+/', '-_');
-    return rtrim($encoded, '=');
+    $encoded = strtr(base64_encode($data), '+=/', '-_.');
+    //return rtrim($encoded, '=');
+    return $encoded;
 }
 
 function url_base64_decode(#[\SensitiveParameter] string $data): string {
-    $decoded = base64_decode(strtr($data, '-_', '+/'), true);
+    $decoded = base64_decode(strtr($data, '-_.', '+=/'), true);
     if (false === $decoded) {
         throw new InvalidArgumentException('url_base64 mal formado.');
     }

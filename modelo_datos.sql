@@ -78,6 +78,12 @@ CREATE TABLE Participation (
 /*Participation no tiene columna participantid: indice obsoleto, igual que los de Responses.
 CREATE INDEX Participants_participant_survey_IDX USING BTREE ON Participation (participantid, surveyid);*/
 
+CREATE TABLE StressTest (
+	participationid INT UNSIGNED auto_increment NOT NULL PRIMARY KEY,
+	surveyid INT UNSIGNED,
+	participationkey VARCHAR(256) NOT NULL
+);
+
 CREATE TABLE Responses (
 	responseid INT UNSIGNED auto_increment NOT NULL,
 	surveyid INT UNSIGNED NOT NULL,
