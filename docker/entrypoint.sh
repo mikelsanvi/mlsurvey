@@ -46,7 +46,9 @@ define('CONFIG', [
 "email_user" => getenv('EMAIL_USER') ?: '',
 "email_password" => getenv('EMAIL_PASSWORD') ?: '',
 "email_from" => getenv('EMAIL_FROM') ?: '',
-"email_encryption" => getenv('EMAIL_ENCRYPTION') ?: 'tls',
+// PHPMailer entiende '' como «sin cifrar», pero una variable vacia no se
+// distingue de una sin definir: por eso se escribe 'none' a proposito.
+"email_encryption" => getenv('EMAIL_ENCRYPTION') === 'none' ? '' : (getenv('EMAIL_ENCRYPTION') ?: 'tls'),
 
 "ml_stresstest" => false,
 ]);

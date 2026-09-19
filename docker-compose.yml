@@ -29,6 +29,37 @@ services:
       retries: 12
       start_period: 30s
 
+  # Postfix de desarrollo. Acepta el correo autenticado de la aplicacion
+  # y lo entrega TODO a un unico buzon local: no tiene salida a internet,
+  # asi que un destinatario mal escrito en una prueba no puede acabar en
+  # el buzon de nadie.
+  #
+  #   docker compose exec mail mlmail        lista los mensajes
+  #   docker compose exec mail mlmail 1      muestra el primero
+  #
+  # Para usar un servidor real, rellena EMAIL_* en .env y este servicio
+  # deja de pintar nada.
+  mail:
+    build:
+      context: .
+      dockerfile: docker/mail/Dockerfile
+    restart: unless-stopped
+    environment:
+      # Cualquier usuaria vale; lo que se comprueba es la clave, y tiene
+      # que coincidir con EMAIL_PASSWORD del servicio web.
+      MAIL_PASSWORD: ${EMAIL_PASSWORD:-mlsurvey}
+    volumes:
+      # El buzon sobrevive a un recreado del contenedor.
+      - mail_data:/var/mail/catchall
+    # El puerto 587 no se publica: solo lo usa el contenedor web por la
+    # red interna de compose.
+    healthcheck:
+      test: ["CMD", "sh", "-c", "postfix status"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 15s
+
   web:
     build: .
     restart: unless-stopped
@@ -55,14 +86,16 @@ services:
       # 0: error, 1: warn, 2: info, 3: debug. En produccion 0.
       LOG_LEVEL: ${LOG_LEVEL:-0}
       # Envio de correo (antes en la base de datos, ahora en config/config.php).
+      # Por defecto apunta al servicio mail de aqui al lado; para un
+      # servidor real, define estas variables en .env (ver .env.dev).
       EMAIL_METHOD: ${EMAIL_METHOD:-SMTP}
-      EMAIL_SERVER: ${EMAIL_SERVER:-}
+      EMAIL_SERVER: ${EMAIL_SERVER:-mail}
       EMAIL_PORT: ${EMAIL_PORT:-587}
-      EMAIL_USER: ${EMAIL_USER:-}
-      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-}
-      EMAIL_FROM: ${EMAIL_FROM:-}
-      # tls (STARTTLS) o ssl.
-      EMAIL_ENCRYPTION: ${EMAIL_ENCRYPTION:-tls}
+      EMAIL_USER: ${EMAIL_USER:-mlsurvey}
+      EMAIL_PASSWORD: ${EMAIL_PASSWORD:-mlsurvey}
+      EMAIL_FROM: ${EMAIL_FROM:-mlsurvey@example.test}
+      # tls (STARTTLS), ssl, o none para SMTP sin cifrar (solo desarrollo).
+      EMAIL_ENCRYPTION: ${EMAIL_ENCRYPTION:-none}
       # Administrador inicial: se crea al arrancar si no existe.
       ADMIN_USER: ${ADMIN_USER:-admin}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin}
@@ -74,3 +107,4 @@ services:
 volumes:
   db_data:
   uploads:
+  mail_data:
