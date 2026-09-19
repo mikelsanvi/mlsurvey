@@ -73,6 +73,8 @@ class SystemManage extends View {
         }
         ?>
         <link href="css/select2.css" rel="stylesheet" />
+        <!-- Despues de select2.css: reescribe su aspecto con el tema. -->
+        <link href="css/select2-theme.css" rel="stylesheet" />
         <link href="css/button3.css" rel="stylesheet" />
         <link href="css/questions.css" rel="stylesheet" />
         <script src="js/select2.js"></script>

@@ -24,6 +24,9 @@ class SurveyManage extends View {
     function addHead (){
         ?>
         <script type="text/javascript" src="vendor/hugerte/hugerte/hugerte.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+        <!-- Viste el marco del editor con el tema; el JS se ocupa del iframe. -->
+        <link href="css/hugerte-theme.css" rel="stylesheet" />
+        <script src="js/hugerte-theme.js"></script>
         <?php
     }
     function getMenuGroup (){
@@ -395,14 +398,11 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
         }
 
         $(document).ready(function() {
-            hugerte.init({
+            hugerte.init(mlHugerte.options ({
                 selector: '.description',
-                language: 'es',
 		plugins: 'link autolink lists',
-		toolbar: 'undo redo | styles | bold italic | link | indent outdent | bullist numlist',
-                menubar: false,
-                license_key: 'gpl' // gpl for open source, T8LK:... for commercial
-            });
+		toolbar: 'undo redo | styles | bold italic | link | indent outdent | bullist numlist'
+            }));
         });
 
         </script>
@@ -636,12 +636,10 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             newquestion = newquestionhtml.replace (/{qid}/g, nextquestionid);
             let position = document.getElementById ("q-" + questionid);
             position.insertAdjacentHTML("afterend", newquestion);
-            const newed = new hugerte.Editor('desc-q-' + nextquestionid, {
-                    license_key: 'gpl',
-                    language: 'es',
+            const newed = new hugerte.Editor('desc-q-' + nextquestionid, mlHugerte.options ({
 		    plugins: 'link autolink lists',
-		    toolbar: 'undo redo | styles | bold italic | link | indent outdent | bullist numlist',
-		    menubar: false}, hugerte.EditorManager);
+		    toolbar: 'undo redo | styles | bold italic | link | indent outdent | bullist numlist'
+            }), hugerte.EditorManager);
             newed.render ();
         }
 

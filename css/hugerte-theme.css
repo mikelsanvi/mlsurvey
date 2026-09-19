@@ -1,0 +1,321 @@
+/* =====================================================================
+   mlsurvey · HugeRTE sobre el tema de la aplicación
+   ---------------------------------------------------------------------
+   HugeRTE (fork de TinyMCE 6) pinta su marco con la piel «oxide»: grises
+   propios, radios de 10px y un azul de acento ajeno al de la aplicación.
+   Aquí se reescribe ese marco con los tokens de theme.css.
+
+   Dos detalles del funcionamiento de HugeRTE que explican la forma de
+   este fichero:
+
+   · La piel se inyecta en <head> en tiempo de ejecución, o sea DESPUÉS
+     de este <link>. Con igual especificidad ganaría ella, así que cada
+     regla se cuelga de «body» para subir un punto y no depender del
+     orden de carga.
+
+   · Lo que se ve dentro del editor va en un <iframe>, que no hereda las
+     custom properties de la página. Eso no se arregla desde aquí: lo
+     resuelve js/hugerte-theme.js, que resuelve los tokens y los inyecta
+     como content_style.
+   ===================================================================== */
+
+/* ------------------------------------------------------------------
+   1. Marco
+   ------------------------------------------------------------------ */
+body .tox-tinymce {
+    border: 1px solid var(--ml-border-strong);
+    border-radius: var(--ml-radius-sm);
+    box-shadow: var(--ml-shadow-sm);
+    font-family: var(--ml-font);
+}
+
+body .tox:not(.tox-tinymce-inline) .tox-editor-header {
+    background: var(--ml-surface-2);
+    border-bottom: 1px solid var(--ml-border);
+    box-shadow: none;
+    padding: 4px;
+}
+
+body .tox .tox-toolbar,
+body .tox .tox-toolbar__primary,
+body .tox .tox-toolbar-overlord {
+    background: transparent;
+}
+
+/* Separadores entre grupos de la barra. */
+body .tox .tox-toolbar__group:not(:last-of-type) {
+    border-right: 1px solid var(--ml-border);
+}
+
+body .tox .tox-edit-area__iframe {
+    background: var(--ml-surface);
+}
+
+/* ------------------------------------------------------------------
+   2. Botones de la barra
+   ------------------------------------------------------------------ */
+body .tox .tox-tbtn {
+    height: 30px;
+    margin: 2px;
+    color: var(--ml-text-soft);
+    background: transparent;
+    border-radius: var(--ml-radius-sm);
+    transition: background-color var(--ml-transition), color var(--ml-transition);
+}
+
+/* Los iconos son SVG con fill propio; currentColor los ata al tema. */
+body .tox .tox-tbtn svg {
+    fill: currentColor;
+}
+
+body .tox .tox-tbtn:hover:not(:disabled) {
+    background: var(--ml-surface-3);
+    color: var(--ml-text);
+}
+
+body .tox .tox-tbtn:active:not(:disabled) {
+    background: var(--ml-accent-soft-hover);
+    color: var(--ml-accent-text);
+}
+
+/* Formato activo en el punto donde está el cursor (negrita, lista…). */
+body .tox .tox-tbtn--enabled,
+body .tox .tox-tbtn--enabled:hover {
+    background: var(--ml-accent-soft);
+    color: var(--ml-accent-text);
+}
+
+body .tox .tox-tbtn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ml-accent-ring);
+}
+
+body .tox .tox-tbtn:disabled,
+body .tox .tox-tbtn--disabled {
+    color: var(--ml-text-muted);
+    opacity: 0.6;
+}
+
+/* Desplegable «Estilos»: etiqueta y galón. */
+body .tox .tox-tbtn__select-label {
+    color: inherit;
+    font-weight: 500;
+}
+
+body .tox .tox-tbtn__select-chevron svg {
+    fill: currentColor;
+}
+
+/* ------------------------------------------------------------------
+   3. Menús y listas desplegables
+   ------------------------------------------------------------------ */
+body .tox .tox-menu {
+    background: var(--ml-elevated);
+    border: 1px solid var(--ml-border-strong);
+    border-radius: var(--ml-radius);
+    box-shadow: var(--ml-shadow-lg);
+}
+
+body .tox .tox-collection__item {
+    color: var(--ml-text);
+    border-radius: var(--ml-radius-sm);
+}
+
+body .tox .tox-collection--list .tox-collection__item--active,
+body .tox .tox-collection--toolbar .tox-collection__item--active {
+    background: var(--ml-accent-soft);
+    color: var(--ml-accent-text);
+}
+
+body .tox .tox-collection--list .tox-collection__item--enabled {
+    background: var(--ml-surface-2);
+    color: var(--ml-text);
+}
+
+body .tox .tox-collection__item-icon svg,
+body .tox .tox-collection__item-checkmark svg,
+body .tox .tox-collection__item-caret svg {
+    fill: currentColor;
+}
+
+body .tox .tox-collection__group-heading {
+    background: transparent;
+    color: var(--ml-text-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+body .tox .tox-collection__group:not(:last-of-type) {
+    border-bottom: 1px solid var(--ml-border);
+}
+
+body .tox .tox-collection__item--state-disabled {
+    color: var(--ml-text-muted);
+}
+
+/* ------------------------------------------------------------------
+   4. Barra de estado
+   HugeRTE la usa para la ruta de elementos y el contador; el logotipo
+   se oculta desde la configuración (branding: false).
+   ------------------------------------------------------------------ */
+body .tox .tox-statusbar {
+    background: var(--ml-surface-2);
+    border-top: 1px solid var(--ml-border);
+    color: var(--ml-text-muted);
+    font-size: 0.8125rem;
+}
+
+body .tox .tox-statusbar a,
+body .tox .tox-statusbar__path-item {
+    color: var(--ml-text-muted);
+}
+
+body .tox .tox-statusbar a:hover,
+body .tox .tox-statusbar__path-item:hover {
+    color: var(--ml-accent-text);
+}
+
+body .tox .tox-statusbar__resize-handle svg {
+    fill: var(--ml-text-muted);
+}
+
+/* ------------------------------------------------------------------
+   5. Diálogos (insertar enlace, buscar…)
+   ------------------------------------------------------------------ */
+body .tox .tox-dialog {
+    background: var(--ml-elevated);
+    border: 1px solid var(--ml-border-strong);
+    border-radius: var(--ml-radius-lg);
+    box-shadow: var(--ml-shadow-lg);
+}
+
+body .tox .tox-dialog__header {
+    background: transparent;
+    color: var(--ml-text);
+    border-bottom: 1px solid var(--ml-border);
+}
+
+body .tox .tox-dialog__title {
+    color: var(--ml-text);
+    font-family: var(--ml-font);
+}
+
+body .tox .tox-dialog__body,
+body .tox .tox-dialog__body-nav-item {
+    color: var(--ml-text);
+}
+
+body .tox .tox-dialog__footer {
+    background: var(--ml-surface-2);
+    border-top: 1px solid var(--ml-border);
+}
+
+body .tox .tox-dialog-wrap__backdrop {
+    background: rgb(13 17 23 / 0.45);
+}
+
+/* Campos del diálogo: misma pinta que los de la aplicación. */
+body .tox .tox-textfield,
+body .tox .tox-textarea,
+body .tox .tox-listbox--select {
+    background: var(--ml-surface);
+    color: var(--ml-text);
+    border: 1px solid var(--ml-border-strong);
+    border-radius: var(--ml-radius-sm);
+    font-family: inherit;
+    transition: border-color var(--ml-transition), box-shadow var(--ml-transition);
+}
+
+body .tox .tox-textfield:focus,
+body .tox .tox-textarea:focus,
+body .tox .tox-listbox--select:focus {
+    border-color: var(--ml-accent);
+    box-shadow: 0 0 0 3px var(--ml-accent-ring);
+    outline: none;
+}
+
+body .tox .tox-label,
+body .tox .tox-toolbar-label {
+    color: var(--ml-text-soft);
+    font-weight: 600;
+}
+
+/* Botón principal del diálogo. */
+body .tox .tox-button {
+    background: var(--ml-accent);
+    color: var(--ml-accent-contrast);
+    border: 1px solid var(--ml-accent);
+    border-radius: var(--ml-radius-sm);
+    font-family: inherit;
+    font-weight: 600;
+    transition: background-color var(--ml-transition), border-color var(--ml-transition);
+}
+
+body .tox .tox-button:hover:not(:disabled) {
+    background: var(--ml-accent-hover);
+    border-color: var(--ml-accent-hover);
+}
+
+body .tox .tox-button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px var(--ml-accent-ring);
+}
+
+/* Botón secundario (Cancelar) y botones desnudos de la cabecera. */
+body .tox .tox-button--secondary {
+    background: var(--ml-surface-2);
+    color: var(--ml-text);
+    border: 1px solid var(--ml-border-strong);
+}
+
+body .tox .tox-button--secondary:hover:not(:disabled) {
+    background: var(--ml-surface-3);
+    border-color: var(--ml-text-muted);
+}
+
+body .tox .tox-button--naked {
+    background: transparent;
+    border-color: transparent;
+    color: var(--ml-text-soft);
+}
+
+body .tox .tox-button--naked:hover:not(:disabled) {
+    background: var(--ml-surface-3);
+    border-color: transparent;
+    color: var(--ml-text);
+}
+
+body .tox .tox-button--naked .tox-icon svg,
+body .tox .tox-button--icon .tox-icon svg {
+    fill: currentColor;
+}
+
+/* ------------------------------------------------------------------
+   6. Notificaciones
+   ------------------------------------------------------------------ */
+body .tox .tox-notification {
+    background: var(--ml-surface-2);
+    border: 1px solid var(--ml-border-strong);
+    border-radius: var(--ml-radius-sm);
+    color: var(--ml-text);
+}
+
+body .tox .tox-notification--warn {
+    background: var(--ml-warning-soft);
+    border-color: var(--ml-warning);
+    color: var(--ml-warning);
+}
+
+body .tox .tox-notification--error {
+    background: var(--ml-danger-soft);
+    border-color: var(--ml-danger);
+    color: var(--ml-danger);
+}
+
+body .tox .tox-notification--success {
+    background: var(--ml-success-soft);
+    border-color: var(--ml-success);
+    color: var(--ml-success);
+}
