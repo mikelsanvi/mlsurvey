@@ -5,6 +5,8 @@ include_once 'utils/logger.php';
 include_once 'ifaces/view.php';
 include_once 'utils/user.php';
 require_once "include/config.php";
+
+Config::getSystemConfig ();
 startSession ();
 $viewsfolder = 'views';
 $classviewfile = $viewsfolder;
@@ -154,7 +156,7 @@ $view->addHead ();
 				<div class="col-lg-6">
 					<div class="copyright">
 						<p>
-							<span>Powered by: <a href="https://github.com/pacoandres/mlsurvey" target="_blank">mlsurveys</a></span>
+							<span>Powered by: <a href="https://github.com/pacoandres/mlsurvey" target="_blank">mlsurvey</a></span>
 						</p>
 						<p>
 							<span>Special thanks to: <a href="https://github.com/PHPMailer/PHPMailer" target="_blank">PHPMailer</a>

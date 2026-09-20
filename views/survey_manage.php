@@ -813,14 +813,17 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             $dbconn = dbConn ();
             $dbconn->beginTransaction ();
             try {
-                $query = $dbconn->prepare ("INSERT into {Surveys} " . 
-                    "(surveyname, surveydesc, surveyfile, showpartial, startdate, enddate) " .
-                    "values (:name, :desc, :file, :partial, :start, :end)");
+                $query = $dbconn->prepare ("INSERT into {Surveys}  
+                    (surveyname, surveydesc, surveyfile, showpartial, startdate, enddate,
+                    createdby, modifiedby)
+                    values (:name, :desc, :file, :partial, :start, :end,
+                    :uid, :uid)");
                 $query->bindParam (":name", $surveyname, PDO::PARAM_STR);
                 $query->bindParam (":partial", $showpartial, PDO::PARAM_BOOL);
                 $query->bindParam (":start", $startstring, PDO::PARAM_STR);
                 $query->bindParam (":end", $endstring, PDO::PARAM_STR);
                 $query->bindParam (":desc", $surveydesc, PDO::PARAM_STR);
+                $query->bindParam (":uid", $_SESSION["userid"], PDO::PARAM_INT);
                 if (is_string ($filename)){
                     $query->bindParam (":file", $filename, PDO::PARAM_STR);
                 }
@@ -829,6 +832,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
                 }
                 $query->execute ();
                 $sid = $dbconn->lastInsertId ();
+                $this->mvdir (session_id (), $sid);
                 $this->insertQuestions ($dbconn, $sid, $questions);
                 $dbconn->commit ();
             }
@@ -842,7 +846,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             logMessage (LOGGER_ERROR, "Error {$e} inserting survey.");
             $this->deldir (session_id ());
         }
-        if ($filename == false){
+        if ($filename === false){
             echo ("<p><strong>Error subiendo archivo: {$this->fileerror}.</strong></p>");
             $this->deldir (session_id ());
         }
@@ -883,8 +887,13 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             $dbconn = dbConn ();
             $dbconn->beginTransaction ();
             try {
-                $query = $dbconn->prepare ("Delete from {Surveys} where " . 
-                    "surveyid = :sid");
+                $query = $dbconn->prepare ("UPDATE {Surveys} SET modifiedy = :uid
+                    WHERE surveyid = :sid");
+                $query->bindParam (":sid", $_REQUEST['surveyid'], PDO::PARAM_INT);
+                $query->bindParam (":uid", $_SESSION["userid"], PDO::PARAM_INT);
+                $query->execute ();
+                $query = $dbconn->prepare ("DELETE FROM {Surveys} WHERE
+                    surveyid = :sid");
                 $query->bindParam (":sid", $_REQUEST['surveyid'], PDO::PARAM_INT);
                 $query->execute ();
                 $dbconn->commit ();
@@ -1087,14 +1096,16 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             $dbconn->beginTransaction ();
             try {
                 $query = $dbconn->prepare ("UPDATE {Surveys}  
-                     set surveyname = :name, startdate = :start, showpartial = :partial,
-                    enddate = :end, surveydesc = :desc, surveyfile = :file where surveyid = :sid");
+                     SET surveyname = :name, startdate = :start, showpartial = :partial,
+                    enddate = :end, surveydesc = :desc, surveyfile = :file, modifiedby = :uid 
+                    WHERE surveyid = :sid");
                 $query->bindParam (":name", $surveyname, PDO::PARAM_STR);
                 $query->bindParam (":start", $startstring, PDO::PARAM_STR);
                 $query->bindParam (":end", $endstring, PDO::PARAM_STR);
                 $query->bindParam (":desc", $surveydesc, PDO::PARAM_STR);
                 $query->bindParam (":sid", $sid, PDO::PARAM_INT);
                 $query->bindParam (":partial", $showpartial, PDO::PARAM_BOOL);
+                $query->bindParam (":uid", $_SESSION["userid"], PDO::PARAM_INT);
                 if (is_string ($filename)){
                     $query->bindParam (":file", $filename, PDO::PARAM_STR);
                 }
@@ -1118,7 +1129,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             echo ("<strong>Error al modificar la consulta.</strong>");
             logMessage (LOGGER_ERROR, "Error {$e} when modifying survey");
         }
-        if ($filename == false){
+        if ($filename === false){
             echo ("<p><strong>Error subiendo archivo: {$this->fileerror}.</strong></p>");
             $this->deldir ($sid);
         }
@@ -1129,12 +1140,12 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
                 
         $fileinfo = $_FILES['file-input'];
         if (is_array ($fileinfo["error"])){
-            $fileerror = "Solo un archivo por subida";
+            $this->fileerror = "Solo un archivo por subida";
             return false;
         }
 
         if ($fileinfo["error"] != UPLOAD_ERR_OK && $fileinfo["error"] != UPLOAD_ERR_NO_FILE){
-            $fileerror = "Error {$fileinfo['error']} al subir el archivo {$fileinfo['name']}";
+            $this->fileerror = "Error {$fileinfo['error']} al subir el archivo {$fileinfo['name']}";
             return false;
         }
         else if ($fileinfo["error"] == UPLOAD_ERR_NO_FILE){
@@ -1148,8 +1159,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             return $name;
         }
         else if ($res != 0){
-            $fileerror = "No es un PDF válido";
-
+            $this->fileerror = "No es un PDF válido";
             return false;
         }
         

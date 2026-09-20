@@ -41,5 +41,7 @@ function dbConn (){
         $dbconn->setPrefix (Config::PARAMS["db_prefix"]);
     else
         $dbconn->setPrefix ("");
+    if (!empty (Config::$timezone))
+        $dbconn->exec ("SET time_zone = '{Config::$timezone}'");
     return $dbconn;
 }

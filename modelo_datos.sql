@@ -15,7 +15,16 @@ CREATE TABLE Surveys (
 	startdate DATETIME NOT NULL,
 	enddate DATETIME NOT NULL,
 	created DATETIME DEFAULT current_timestamp NOT NULL,
-	CONSTRAINT Surveys_PK PRIMARY KEY (surveyid)
+	createdby INT NOT NULL,
+	modifiedby INT NOT NULL,
+	CONSTRAINT Surveys_PK PRIMARY KEY (surveyid),
+	CONSTRAINT Surveys_Users_C_FK FOREIGN KEY (createdby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT,
+	CONSTRAINT Surveys_Users_M_FK FOREIGN KEY (modifiedby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT,
+)
+WITH SYSTEM VERSIONING
+PARTITION BY SYSTEM_TIME (
+    PARTITION p_history HISTORY,
+    PARTITION p_current CURRENT
 );
 
 CREATE TABLE Questions (
@@ -46,15 +55,9 @@ CREATE TABLE SystemConfig (
 	configid INT UNSIGNED auto_increment NOT NULL,
 	timezone TEXT NULL,
 	alloweddomains TEXT NULL,
-	emailmethod INT NULL, /*From mlmailer class constants*/
-	emailcmdparams TEXT NULL, /*For sendmail*/
-	emailserver TEXT NULL,
-	emailuser TEXT NULL,
-	emailpasswd TEXT NULL,
-	emailfrom TEXT NULL,
-	emailsecurity TEXT NULL, /*from PHPMailer::ENCRIPTION_* */
-	emailport INT NULL,
-	emaildkim TEXT NULL,
+	mainheader TEXT NULL,
+	maincontent TEXT NULL,
+	icon VARCHAR(256) NULL,
 	CONSTRAINT SystemConfig_PK PRIMARY KEY (configid)
 );
 
@@ -76,8 +79,7 @@ CREATE TABLE Participation (
 	CONSTRAINT Participation_PK PRIMARY KEY (participationid),
 	CONSTRAINT Participation_surveys_FK FOREIGN KEY (surveyid) REFERENCES Surveys(surveyid) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
-/*Participation no tiene columna participantid: indice obsoleto, igual que los de Responses.
-CREATE INDEX Participants_participant_survey_IDX USING BTREE ON Participation (participantid, surveyid);*/
+
 
 CREATE TABLE StressTest (
 	participationid INT UNSIGNED auto_increment NOT NULL PRIMARY KEY,
