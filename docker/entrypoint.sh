@@ -23,7 +23,9 @@ else
     echo "[mlsurvey] generando config/config.php desde las variables de entorno."
     cat > "$CONFIG_FILE" <<'PHPEOF'
 <?php
-const CONFIG = [
+// Fichero generado por el entrypoint de docker: no editar, se regenera al arrancar.
+// define() en lugar de const: una expresion const no admite llamadas a getenv().
+define('CONFIG', [
 "db_host" => getenv('DB_HOST')   ?: 'db',
 "db_name" => getenv('DB_NAME')   ?: 'mlsurvey',
 "db_user"=> getenv('DB_USER')   ?: 'mlsurvey',
@@ -44,11 +46,12 @@ const CONFIG = [
 "email_user" => getenv('EMAIL_USER') ?: '',
 "email_password" => getenv('EMAIL_PASSWORD') ?: '',
 "email_from" => getenv('EMAIL_FROM') ?: '',
-"email_encryption" => getenv('EMAIL_ENCRYPTIO') ?: 'tls'
-
+// PHPMailer entiende '' como «sin cifrar», pero una variable vacia no se
+// distingue de una sin definir: por eso se escribe 'none' a proposito.
+"email_encryption" => getenv('EMAIL_ENCRYPTION') === 'none' ? '' : (getenv('EMAIL_ENCRYPTION') ?: 'tls'),
 
 "ml_stresstest" => false,
-];
+]);
 PHPEOF
     chown www-data:www-data "$CONFIG_FILE"
     chmod 640 "$CONFIG_FILE"

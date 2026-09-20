@@ -1,5 +1,6 @@
 <?php
 require_once 'include/mlpdo.php';
+require_once 'include/config.php';
 
 /**
  * Devuelve la conexion a la base de datos.

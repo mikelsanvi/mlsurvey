@@ -22,7 +22,7 @@ INSERT INTO Users (username, passwd, `role`) VALUES ('profesora', '$2y$10$loC.cY
 
 /* ---------- Configuracion del sistema ---------- */
 INSERT INTO SystemConfig (configid, timezone, alloweddomains, emailmethod, emailfrom)
-    VALUES (1, 'Europe/Madrid', 'example.com ejemplo.org', 0, 'consultas@example.com');
+    VALUES (1, 'Europe/Madrid', 'educa.madrid.org', 0, 'consultas@example.com');
 /* emailmethod = 0 (MlMailer::NO_METHOD): no se envian correos. Configura SMTP o
    sendmail desde 'Configuracion del sistema' si quieres recibir los codigos. */
 
