@@ -286,6 +286,8 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
                 </button>
             </div>
         </label>
+        <p><label for="showpartial">Mostrar resultados parciales:</label>
+            <input type="checkbox" name="showpartial" id="showpartial" value="1"></p>
         <p><label for="startdate">Inicio:</label>
             <input type="datetime-local" id="startdate" name="startdate"></p>
         <p><label for="enddate">Fin:</label>
@@ -779,6 +781,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
         $startstring = $_REQUEST['startdate'];
         $endstring = $_REQUEST['enddate'];
         $surveydesc = $_REQUEST['surveydesc'];
+        $showpartial = isset ($_REQUEST["showpartial"]);
         $nquestion = 1;
         $noption = 1;
         $questions = array();
@@ -807,9 +810,10 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             $dbconn->beginTransaction ();
             try {
                 $query = $dbconn->prepare ("INSERT into {Surveys} " . 
-                    "(surveyname, surveydesc, surveyfile, startdate, enddate) " .
-                    "values (:name, :desc, :file, :start, :end)");
+                    "(surveyname, surveydesc, surveyfile, showpartial, startdate, enddate) " .
+                    "values (:name, :desc, :file, :partial, :start, :end)");
                 $query->bindParam (":name", $surveyname, PDO::PARAM_STR);
+                $query->bindParam (":partial", $showpartial, PDO::PARAM_BOOL);
                 $query->bindParam (":start", $startstring, PDO::PARAM_STR);
                 $query->bindParam (":end", $endstring, PDO::PARAM_STR);
                 $query->bindParam (":desc", $surveydesc, PDO::PARAM_STR);
@@ -936,6 +940,9 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
                 </button>
             </div>
         </label>
+        <p><label for="showpartial">Mostrar resultados parciales:</label>
+            <input type="checkbox" name="showpartial" id="showpartial"
+            <?= empty ($survey['showpartial'])?"":"checked" ?> value="1"></p>
         <p><label for="startdate">Inicio:</label>
             <input type="datetime-local" id="startdate" name="startdate"
             value="<?= $survey['startdate'] ?>"></p>
@@ -1049,6 +1056,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
         $startstring = $_REQUEST['startdate'];
         $endstring = $_REQUEST['enddate'];
         $surveydesc = $_REQUEST['surveydesc'];
+        $showpartial = isset ($_REQUEST["showpartial"]);
         $nquestion = 1;
         $noption = 1;
         $questions = array();
@@ -1074,14 +1082,15 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             $dbconn = dbConn ();
             $dbconn->beginTransaction ();
             try {
-                $query = $dbconn->prepare ("UPDATE {Surveys} " . 
-                    " set surveyname = :name, startdate = :start, " . 
-                    "enddate = :end, surveydesc = :desc, surveyfile = :file where surveyid = :sid");
+                $query = $dbconn->prepare ("UPDATE {Surveys}  
+                     set surveyname = :name, startdate = :start, showpartial = :partial,
+                    enddate = :end, surveydesc = :desc, surveyfile = :file where surveyid = :sid");
                 $query->bindParam (":name", $surveyname, PDO::PARAM_STR);
                 $query->bindParam (":start", $startstring, PDO::PARAM_STR);
                 $query->bindParam (":end", $endstring, PDO::PARAM_STR);
                 $query->bindParam (":desc", $surveydesc, PDO::PARAM_STR);
                 $query->bindParam (":sid", $sid, PDO::PARAM_INT);
+                $query->bindParam (":partial", $showpartial, PDO::PARAM_BOOL);
                 if (is_string ($filename)){
                     $query->bindParam (":file", $filename, PDO::PARAM_STR);
                 }

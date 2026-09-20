@@ -11,6 +11,7 @@ CREATE TABLE Surveys (
 	surveyname TEXT NOT NULL,
 	surveydesc TEXT NOT NULL,
 	surveyfile TEXT NULL,
+	showpartial BOOL NULL,
 	startdate DATETIME NOT NULL,
 	enddate DATETIME NOT NULL,
 	created DATETIME DEFAULT current_timestamp NOT NULL,
@@ -101,7 +102,8 @@ CREATE INDEX Responses_survey_date_IDX USING BTREE ON Responses (surveyid, respo
 CREATE TABLE Results (
 	surveyid INT UNSIGNED NOT NULL,
 	results TEXT NOT NULL, /*A JSON with the results*/
-	resultsdate DATETIME NOT NULL DEFAULT current_timestamp,
+	ispartial BOOL NULL,
+	resultsdate DATETIME NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
 	CONSTRAINT Results_PK PRIMARY KEY (surveyid),
 	CONSTRAINT Results_Surveys_FK FOREIGN KEY (surveyid) REFERENCES Surveys(surveyid) ON DELETE RESTRICT ON UPDATE RESTRICT	
 );
