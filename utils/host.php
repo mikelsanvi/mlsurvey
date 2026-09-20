@@ -1,4 +1,5 @@
 <?php
+require_once 'include/config.php';
 
 function getURL (){
     $server = rtrim ($_SERVER['HTTP_HOST'], "/");

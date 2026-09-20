@@ -73,6 +73,8 @@ class SystemManage extends View {
         }
         ?>
         <link href="css/select2.css" rel="stylesheet" />
+        <!-- Despues de select2.css: reescribe su aspecto con el tema. -->
+        <link href="css/select2-theme.css" rel="stylesheet" />
         <link href="css/button3.css" rel="stylesheet" />
         <link href="css/questions.css" rel="stylesheet" />
         <script src="js/select2.js"></script>
@@ -125,21 +127,27 @@ class SystemManage extends View {
                 for (var elementid in smtpelements){
                     var element = document.getElementById (elementid);
                     if (element.value == ""){
-                        alert (smtpelements[elementid]);
+                        mlDialog.alert (smtpelements[elementid]);
                         return false;
                     }
                 }
 
                 if ($("#emailsecurity").val () == 0 ){
-                    alert ("Debes indicar el mecanismo de cifrado para SMTP.");
+                    mlDialog.alert ("Debes indicar el mecanismo de cifrado para SMTP.");
                     $("#emailsecurity").select2 ('open');
                     return false;
                 }
                 return true;
             }
-            function validate_config (){
+            /* Igual que en las pantallas de gestión: el diálogo del tema
+               es asíncrono, así que cuando hay que preguntar se frena el
+               envío y se vuelve a pulsar el botón tras responder. */
+            function validate_config (boton){
+                if (boton && boton.dataset.confirmado === '1')
+                    return true;
+
                 if ($("#timezone").val () == 0 ){
-                    alert ("Debes indicar una zona horaria.");
+                    mlDialog.alert ("Debes indicar una zona horaria.");
                     $("#timezone").select2 ('open');
                     return false;
                 }
@@ -147,19 +155,28 @@ class SystemManage extends View {
                 var element = document.getElementById ("alloweddomains");
                 if (element.value.trim () != ""){
 	                if (!checkDomains (element.value)){
-        	            alert ("Los dominios introducidos no son válidos.")
+        	            mlDialog.alert ("Los dominios introducidos no son válidos.")
                 	    element.focus ({preventScroll: false, focusVisible: true});
 	                    return false;
         	        }
 		}
 		else {
-			return window.confirm ("Si no introduces ningún dominio " + 
-				"cualquiera podrá participar en las consultas.\n" +
-				"¿Confirmas que esto es así?");
+			mlDialog.confirm ({
+				title: "Sin dominios permitidos",
+				message: "Si no introduces ningún dominio, cualquiera podrá " +
+					"participar en las consultas.\n¿Confirmas que esto es así?",
+				confirmText: "Sí, guardar así"
+			}).then (function (confirmado){
+				if (!confirmado)
+					return;
+				boton.dataset.confirmado = '1';
+				boton.click ();
+			});
+			return false;
 		}
                 /*var element = document.getElementById ("emailfrom");
                 if (element.value == ""){
-                    alert ("La dirección del remitente no es válida.")
+                    mlDialog.alert ("La dirección del remitente no es válida.")
                     element.focus ({preventScroll: false, focusVisible: true});
                     return false;
                 }
@@ -175,7 +192,7 @@ class SystemManage extends View {
                         return false;
                 }
                 else {
-                    alert ("Debes indicar un método válido para el envío de mensajes.");
+                    mlDialog.alert ("Debes indicar un método válido para el envío de mensajes.");
                     $("#emailmethod").select2 ('open');
                     return false;
                 }*/
@@ -184,7 +201,7 @@ class SystemManage extends View {
                 if (element.checked){
                     element = document.getElementById ("testrecipient");
                     if (element.value == ""){
-                        alert ("Para enviar un correo de prueba debes añadir destinatarias.");
+                        mlDialog.alert ("Para enviar un correo de prueba debes añadir destinatarias.");
                         element.focus ({preventScroll: false, focusVisible: true});
                         return false;
                     }
@@ -252,7 +269,7 @@ class SystemManage extends View {
             </div>
         </div>
         <p><input type="submit" class="button-3" name="<?= self::MANAGEACTION ?>"
-             id="mod" value="Modificar" onclick="return validate_config ();">
+             id="mod" value="Modificar" onclick="return validate_config (this);">
             </p>
         </form>
         <?php

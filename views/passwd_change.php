@@ -46,15 +46,27 @@ class PasswdChange extends View {
                 return;
         }
         ?>
-        <form id="chgpwd" name="chgpwd" method="POST" action="passwd_change" 
-            onload='document.getElementById("user").focus();'>
-            <p>Clave actual: <input type="password" id="current" name="current" tabindex="-1"
-                required></p>
-            <p>Nueva clave: <input type="password" id="newpasswd" name="newpasswd" required></p>
-            <p>Confirmar nueva clave: <input type="password" id="newpasswd1" name="newpasswd1" required></p>
-            <input class="button-3" type="submit" name="<?= self::CHGPW_ACTION ?>" 
-                id="<?= self::CHGPW_ACTION ?>" value="Cambiar" onclick="return validatePasswd ();">
-    
+        <form id="chgpwd" name="chgpwd" method="POST" action="passwd_change">
+            <div class="ml-form">
+                <div class="ml-form-row">
+                    <label for="current">Clave actual:</label>
+                    <input type="password" id="current" name="current" autocomplete="current-password" required>
+                </div>
+                <div class="ml-form-row">
+                    <label for="newpasswd">Nueva clave:</label>
+                    <input type="password" id="newpasswd" name="newpasswd" autocomplete="new-password" required>
+                </div>
+                <div class="ml-form-row">
+                    <label for="newpasswd1">Confirmar nueva clave:</label>
+                    <input type="password" id="newpasswd1" name="newpasswd1" autocomplete="new-password" required>
+                </div>
+
+                <p class="ml-form-wide">
+                    <input class="button-3" type="submit" name="<?= self::CHGPW_ACTION ?>"
+                        id="<?= self::CHGPW_ACTION ?>" value="Cambiar" onclick="return validatePasswd ();">
+                </p>
+            </div>
+
             <?= setTokenHTML (); ?>
         </form>
         <?php
@@ -96,7 +108,7 @@ class PasswdChange extends View {
                 const pw = document.getElementById ("newpasswd").value;
                 const pw1 = document.getElementById ("newpasswd1").value;
                 if (pw != pw1){
-                    alert ("La nueva clave y su confirmación no coinciden");
+                    mlDialog.alert ("La nueva clave y su confirmación no coinciden");
                     return false;
                 }
                 return true;

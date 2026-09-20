@@ -133,12 +133,43 @@
     box-shadow: 0 0 0 3px var(--ml-danger-ring);
 }
 
+/* Destructiva discreta: en un listado, un botón rojo por fila grita
+   demasiado. Se queda apagada hasta que el puntero la señala. */
+.button-3.is-ghost.is-danger {
+    background: transparent;
+    color: var(--ml-danger);
+    box-shadow: none;
+}
+
+.button-3.is-ghost.is-danger:hover:not(:disabled) {
+    background: var(--ml-danger-soft);
+    color: var(--ml-danger);
+    box-shadow: none;
+}
+
 /* --- Botones de icono ------------------------------------------- */
 .button-3.is-icon,
-.button-3:has(> img:only-child) {
+.button-3:has(> img:only-child),
+.button-3:has(> .ml-icon:only-child) {
     width: 38px;
     min-width: 38px;
     padding: 0;
+}
+
+/* --- Iconos que siguen al tema -----------------------------------
+   Con <img> el icono no puede tomar el color del botón: dentro del
+   archivo, fill="currentColor" se resuelve contra el propio SVG y sale
+   negro, da igual el tema. Por eso los iconos de los botones se
+   incrustan en el HTML (ver include/icons.php): ahí currentColor sí es
+   el color del botón, y el icono acompaña al tema y a la variante sin
+   filtros ni máscaras — gris en reposo, rojo en la destructiva.
+
+   El <svg> ya trae width y height propios, así que esto sólo evita que
+   el flex lo encoja y que se coma el clic del botón. */
+.button-3 .ml-icon {
+    display: block;
+    flex: none;
+    pointer-events: none;
 }
 
 /* Los SVG llegan por <img>, donde fill="currentColor" se resuelve a

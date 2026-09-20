@@ -3,6 +3,7 @@ require_once 'ifaces/view.php';
 require_once 'utils/user.php';
 require_once 'utils/dbutils.php';
 require_once 'utils/logger.php';
+require_once 'include/icons.php';
 
 class UserManage extends View {
 
@@ -116,16 +117,30 @@ class UserManage extends View {
             <div class="card-table-container">
             <table class="card-like-table ml-stack" id="userstable">
                 <thead><tr>
-                    <td>Usuaria</td><td>Seleccionar</td>
+                    <td>Usuaria</td><td class="ml-row-actions">Acciones</td>
                 </tr></thead>
                 <tbody>
                 <?php
                 while ($row = $query->fetch ()){
                     $id = $row['userid'];
+                    $name = $row['username'];
                     ?>
                     <tr id="<?= $id; ?>">
-                        <td><span class="username" id="us-<?= $id; ?>"><?= $row['username']?></span></td>
-                        <td><input type="radio" name="userid" value="<?= $id; ?>" id="rb-<?= $id; ?>"></td>
+                        <td><span class="username" id="us-<?= $id; ?>"><?= $name ?></span></td>
+                        <td class="ml-row-actions">
+                            <button type="submit" class="button-3 is-ghost is-icon"
+                                name="<?= self::MANAGEACTION ?>" value="Modificar"
+                                id="modify-<?= $id; ?>" onclick="return pick_user (<?= $id; ?>);"
+                                title="Modificar" aria-label="Modificar a <?= htmlspecialchars ($name); ?>">
+                                <?= mlIcon ('edit'); ?>
+                            </button>
+                            <button type="submit" class="button-3 is-ghost is-icon is-danger"
+                                name="<?= self::MANAGEACTION ?>" value="Eliminar"
+                                id="delete-<?= $id; ?>" onclick="return confirm_delete (<?= $id; ?>, this);"
+                                title="Eliminar" aria-label="Eliminar a <?= htmlspecialchars ($name); ?>">
+                                <?= mlIcon ('trash'); ?>
+                            </button>
+                        </td>
                     </tr>
                     <?php
                 }
@@ -133,20 +148,9 @@ class UserManage extends View {
                 </tbody>
             </table>
 </div>
-<script type="text/javascript">
-                const miTabla = document.getElementById("userstable");
-
-                miTabla.addEventListener("click", function(evento) {
-                    // Encuentra la fila (tr) más cercana al elemento que recibió el clic
-                    const fila = evento.target.closest("tr");
-  
-                    if (!fila) {
-                        return;
-                    }
-                    var userid = 'rb-' + fila.id;
-                    document.getElementById (userid).checked = true;    
-                });
-            </script>
+<!-- Los botones de cada fila escriben aquí a quién afectan: el servidor
+     sigue leyendo $_REQUEST['userid'], como con el antiguo radio. -->
+<input type="hidden" name="userid" id="selecteduser" value="">
             <?php
             $query->closeCursor ();
         }
@@ -161,35 +165,37 @@ class UserManage extends View {
     private function showControls (){
        ?>
        <script type="text/javascript">
-        function validate_modify (){
-            var selectedradio = document.querySelector('input[name="userid"]:checked');
-            if (!selectedradio){
-                alert ('No has seleccionado ninguna para modificar');
-                return false;
-            }
+        /* Cada fila dice sobre quién actúa antes de enviar el formulario. */
+        function pick_user (id){
+            document.getElementById ('selecteduser').value = id;
             return true;
         }
-        function confirm_delete (){
-            var selectedradio = document.querySelector('input[name="userid"]:checked');
-            if (!selectedradio){
-                alert ('No has seleccionado ninguna para eliminar');
-                return false;
-            }
-            var element =  'us-' + selectedradio.value;
-            var username = document.getElementById (element).innerText;
-            return confirm ("¿Seguro que quieres eliminar la usuaria " + username + "?\nEsto no se puede deshacer");
+        /* El diálogo del tema no detiene la ejecución como confirm(), así
+           que este onclick siempre frena el envío y, si la respuesta es
+           que sí, vuelve a pulsar el mismo botón: la segunda vez pasa de
+           largo y el formulario se envía con su name y su value. */
+        function confirm_delete (id, boton){
+            if (boton.dataset.confirmado === '1')
+                return true;
+
+            pick_user (id);
+            var username = document.getElementById ('us-' + id).innerText;
+            mlDialog.confirm ({
+                title: "Eliminar usuaria",
+                message: "¿Seguro que quieres eliminar a " + username + "?\nEsto no se puede deshacer.",
+                confirmText: "Eliminar",
+                danger: true
+            }).then (function (confirmado){
+                if (!confirmado)
+                    return;
+                boton.dataset.confirmado = '1';
+                boton.click ();
+            });
+            return false;
         }
         </script>
        <p>
        <input type="submit" class="button-3" name="<?= self::MANAGEACTION ?>" id="add" value="Añadir">
-       <?php
-       if ($this->userscount > 0){
-        ?>
-       <input type="submit" class="button-3" name="<?= self::MANAGEACTION ?>" onclick="return validate_modify ();" id="modify" value="Modificar">
-       <input type="submit" class="button-3" name="<?= self::MANAGEACTION ?>" onclick="return confirm_delete();" id="delete" value="Eliminar">
-       <?php
-       }
-       ?>
         </p>
         <?php
        
@@ -202,17 +208,17 @@ class UserManage extends View {
             function validate_add (){
                 var username = document.getElementById ("user").value;
                 if (username == ""){
-                    alert ("El nombre de usuaria no puede estar vacío");
+                    mlDialog.alert ("El nombre de usuaria no puede estar vacío");
                     return false;
                 }
                 var pw1 = document.getElementById ('passwd').value;
                 var pw2 = document.getElementById ('passwd2').value;
                 if (pw1 == ""){
-                    alert ("LA clave no puede estar vacía");
+                    mlDialog.alert ("LA clave no puede estar vacía");
                     return false;
                 }
                 if (pw1 != pw2){
-                    alert ("Las claves no coinciden");
+                    mlDialog.alert ("Las claves no coinciden");
                     return false;
                 }
                 return true;
@@ -260,14 +266,14 @@ onload='document.getElementById("user").focus();'>
             function validate_mod (){
                 var username = document.getElementById ("user").value;
                 if (username == ""){
-                    alert ("El nombre de usuaria no puede estar vacío");
+                    mlDialog.alert ("El nombre de usuaria no puede estar vacío");
                     return false;
                 }
                 var pw1 = document.getElementById ('passwd').value;
                 var pw2 = document.getElementById ('passwd2').value;
                 
                 if (pw1 != pw2){
-                    alert ("Las claves no coinciden");
+                    mlDialog.alert ("Las claves no coinciden");
                     return false;
                 }
                 return true;

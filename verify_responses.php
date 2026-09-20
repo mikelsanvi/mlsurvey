@@ -1,5 +1,5 @@
-<?
-require_once 'config/config.php';
+<?php
+require_once 'include/config.php';
 require_once 'utils/dbutils.php';
 require_once 'utils/participation.php';
 
