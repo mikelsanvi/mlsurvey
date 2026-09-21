@@ -15,17 +15,15 @@ CREATE TABLE Surveys (
 	startdate DATETIME NOT NULL,
 	enddate DATETIME NOT NULL,
 	created DATETIME DEFAULT current_timestamp NOT NULL,
-	createdby INT NOT NULL,
-	modifiedby INT NOT NULL,
+	createdby INT UNSIGNED NOT NULL,
+	modifiedby INT UNSIGNED NOT NULL,
 	CONSTRAINT Surveys_PK PRIMARY KEY (surveyid),
 	CONSTRAINT Surveys_Users_C_FK FOREIGN KEY (createdby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT,
-	CONSTRAINT Surveys_Users_M_FK FOREIGN KEY (modifiedby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT,
+	CONSTRAINT Surveys_Users_M_FK FOREIGN KEY (modifiedby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT
 )
-WITH SYSTEM VERSIONING
-PARTITION BY SYSTEM_TIME (
-    PARTITION p_history HISTORY,
-    PARTITION p_current CURRENT
-);
+/* Sin PARTITION BY SYSTEM_TIME: MariaDB no admite claves ajenas en tablas
+   particionadas (ERROR 1506), y aqui las necesitamos para createdby/modifiedby. */
+WITH SYSTEM VERSIONING;
 
 CREATE TABLE Questions (
 	surveyid INT UNSIGNED NOT NULL,

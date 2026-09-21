@@ -887,7 +887,7 @@ onload='document.getElementById("survey").focus();' enctype="multipart/form-data
             $dbconn = dbConn ();
             $dbconn->beginTransaction ();
             try {
-                $query = $dbconn->prepare ("UPDATE {Surveys} SET modifiedy = :uid
+                $query = $dbconn->prepare ("UPDATE {Surveys} SET modifiedby = :uid
                     WHERE surveyid = :sid");
                 $query->bindParam (":sid", $_REQUEST['surveyid'], PDO::PARAM_INT);
                 $query->bindParam (":uid", $_SESSION["userid"], PDO::PARAM_INT);

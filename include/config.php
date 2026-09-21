@@ -19,7 +19,7 @@ class Config {
     public static function getSystemConfig (){
         $db =dbConn ();
         $query = $db->query ("SELECT timezone, mainheader, maincontent, icon, alloweddomains FROM {SystemConfig} LIMIT 1");
-        if ($query->rowCount () == 1){}{
+        if ($query->rowCount () == 1){
             $row = $query->fetch();
             self::$timezone = $row["timezone"] == null?"":$row["timezone"];
             if (!empty (self::$timezone))

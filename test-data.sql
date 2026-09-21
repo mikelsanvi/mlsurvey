@@ -21,15 +21,15 @@ INSERT INTO Users (username, passwd, `role`) VALUES ('admin', '$2y$10$b1Z0iC4TCY
 INSERT INTO Users (username, passwd, `role`) VALUES ('profesora', '$2y$10$loC.cYvR0R12ApxvPmvhNOeg4VYDmDLv5/tWsAFnH26Q8Aj.EXMpi', '');
 
 /* ---------- Configuracion del sistema ---------- */
-INSERT INTO SystemConfig (configid, timezone, alloweddomains, emailmethod, emailfrom)
-    VALUES (1, 'Europe/Madrid', 'educa.madrid.org', 0, 'consultas@example.com');
-/* emailmethod = 0 (MlMailer::NO_METHOD): no se envian correos. Configura SMTP o
-   sendmail desde 'Configuracion del sistema' si quieres recibir los codigos. */
+INSERT INTO SystemConfig (configid, timezone, alloweddomains)
+    VALUES (1, 'Europe/Madrid', 'educa.madrid.org');
+/* La configuracion de correo ya no vive aqui: esta en config/config.php, que el
+   entrypoint genera a partir de las variables EMAIL_* de docker-compose. */
 
 /* ---------- Consultas, preguntas y opciones ---------- */
 /* 1: Consulta sobre el horario lectivo */
-INSERT INTO Surveys (surveyid, surveyname, surveydesc, surveyfile, startdate, enddate) VALUES
-    (1, 'Consulta sobre el horario lectivo', '<p>Consulta <strong>finalizada</strong> sobre la distribucion del horario lectivo del profesorado. Los resultados ya estan publicados.</p>', NULL, DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY));
+INSERT INTO Surveys (surveyid, surveyname, surveydesc, surveyfile, startdate, enddate, createdby, modifiedby) VALUES
+    (1, 'Consulta sobre el horario lectivo', '<p>Consulta <strong>finalizada</strong> sobre la distribucion del horario lectivo del profesorado. Los resultados ya estan publicados.</p>', NULL, DATE_SUB(NOW(), INTERVAL 30 DAY), DATE_SUB(NOW(), INTERVAL 10 DAY), 1, 1);
 INSERT INTO Questions (surveyid, questionid, questiondesc, optional, multiple, file) VALUES
     (1, 1, '<p>&iquest;Cuantas horas lectivas semanales consideras adecuadas?</p>', 0, 0, NULL);
 INSERT INTO Options (surveyid, questionid, optionid, optiondesc) VALUES
@@ -51,8 +51,8 @@ INSERT INTO Options (surveyid, questionid, optionid, optiondesc) VALUES
     (1, 3, 2, 'No');
 
 /* 2: Actividades extraescolares del proximo curso */
-INSERT INTO Surveys (surveyid, surveyname, surveydesc, surveyfile, startdate, enddate) VALUES
-    (2, 'Actividades extraescolares del proximo curso', '<p>Consulta <strong>abierta</strong>: se puede solicitar codigo y participar mientras este en plazo.</p>', NULL, DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 27 DAY));
+INSERT INTO Surveys (surveyid, surveyname, surveydesc, surveyfile, startdate, enddate, createdby, modifiedby) VALUES
+    (2, 'Actividades extraescolares del proximo curso', '<p>Consulta <strong>abierta</strong>: se puede solicitar codigo y participar mientras este en plazo.</p>', NULL, DATE_SUB(NOW(), INTERVAL 3 DAY), DATE_ADD(NOW(), INTERVAL 27 DAY), 1, 1);
 INSERT INTO Questions (surveyid, questionid, questiondesc, optional, multiple, file) VALUES
     (2, 1, '<p>&iquest;Que actividad te interesa mas?</p>', 0, 0, NULL);
 INSERT INTO Options (surveyid, questionid, optionid, optiondesc) VALUES
@@ -69,8 +69,8 @@ INSERT INTO Options (surveyid, questionid, optionid, optiondesc) VALUES
     (2, 2, 4, 'Sabado por la mañana');
 
 /* 3: Calendario escolar 2027-2028 */
-INSERT INTO Surveys (surveyid, surveyname, surveydesc, surveyfile, startdate, enddate) VALUES
-    (3, 'Calendario escolar 2027-2028', '<p>Consulta <strong>pendiente</strong>: aun no ha comenzado el plazo de participacion.</p>', NULL, DATE_ADD(NOW(), INTERVAL 15 DAY), DATE_ADD(NOW(), INTERVAL 45 DAY));
+INSERT INTO Surveys (surveyid, surveyname, surveydesc, surveyfile, startdate, enddate, createdby, modifiedby) VALUES
+    (3, 'Calendario escolar 2027-2028', '<p>Consulta <strong>pendiente</strong>: aun no ha comenzado el plazo de participacion.</p>', NULL, DATE_ADD(NOW(), INTERVAL 15 DAY), DATE_ADD(NOW(), INTERVAL 45 DAY), 1, 1);
 INSERT INTO Questions (surveyid, questionid, questiondesc, optional, multiple, file) VALUES
     (3, 1, '<p>&iquest;Prefieres jornada continua o partida?</p>', 0, 0, NULL);
 INSERT INTO Options (surveyid, questionid, optionid, optiondesc) VALUES

@@ -17,31 +17,44 @@ require_once 'include/config.php';
  */
 function dbConn (){
     static $dbconn = null;
-    if ($dbconn !== null){
-        return $dbconn;
-    }
-    $port = 3306;
-    if (isset (Config::PARAMS["db_port"]))
-        $port = Config::PARAMS["db_port"];
-    
-    $dbconn = new MLPDO ('mysql:dbname=' . Config::PARAMS["db_name"] . 
-        ';host=' . Config::PARAMS["db_host"] . ';port=' . $port,
-        Config::PARAMS["db_user"], Config::PARAMS["db_pass"], array(
-            MLPDO::ATTR_ERRMODE => MLPDO::ERRMODE_EXCEPTION,
-            MLPDO::ATTR_PERSISTENT => true,
-            // Si la base de datos no responde, fallar pronto en vez de acumular workers bloqueados.
-            MLPDO::ATTR_TIMEOUT => 5,
-        ));
+    static $appliedtz = null;
+    if ($dbconn === null){
+        $port = 3306;
+        if (isset (Config::PARAMS["db_port"]))
+            $port = Config::PARAMS["db_port"];
 
-    // Una conexion persistente puede venir de una peticion que murio a mitad de transaccion.
-    if ($dbconn->inTransaction ()){
-        $dbconn->rollBack ();
+        $dbconn = new MLPDO ('mysql:dbname=' . Config::PARAMS["db_name"] .
+            ';host=' . Config::PARAMS["db_host"] . ';port=' . $port,
+            Config::PARAMS["db_user"], Config::PARAMS["db_pass"], array(
+                MLPDO::ATTR_ERRMODE => MLPDO::ERRMODE_EXCEPTION,
+                MLPDO::ATTR_PERSISTENT => true,
+                // Si la base de datos no responde, fallar pronto en vez de acumular workers bloqueados.
+                MLPDO::ATTR_TIMEOUT => 5,
+            ));
+
+        // Una conexion persistente puede venir de una peticion que murio a mitad de transaccion.
+        if ($dbconn->inTransaction ()){
+            $dbconn->rollBack ();
+        }
+        if (isset (Config::PARAMS["db_prefix"]))
+            $dbconn->setPrefix (Config::PARAMS["db_prefix"]);
+        else
+            $dbconn->setPrefix ("");
     }
-    if (isset (Config::PARAMS["db_prefix"]))
-        $dbconn->setPrefix (Config::PARAMS["db_prefix"]);
-    else
-        $dbconn->setPrefix ("");
-    if (!empty (Config::$timezone))
-        $dbconn->exec ("SET time_zone = '{Config::$timezone}'");
+
+    // La zona horaria sale de la base de datos (Config::getSystemConfig), que a su
+    // vez necesita esta conexion: todavia no se conoce cuando la conexion se crea.
+    // Por eso se aplica aqui, fuera del bloque anterior, en cuanto cambia. Y como
+    // la conexion es persistente, puede llegar con la zona de una peticion previa,
+    // asi que tambien hay que devolverla a SYSTEM cuando no hay ninguna configurada.
+    if ($appliedtz !== Config::$timezone){
+        $appliedtz = Config::$timezone;
+        if (!empty ($appliedtz))
+            // Las propiedades estaticas no se interpolan en una cadena: hay que
+            // concatenar. Ademas el valor viene de la base de datos, asi que se escapa.
+            $dbconn->exec ("SET time_zone = " . $dbconn->quote ($appliedtz));
+        else
+            $dbconn->exec ("SET time_zone = SYSTEM");
+    }
     return $dbconn;
 }
