@@ -16,9 +16,11 @@ class Config {
     public static string $icon = "";
     public static string $alloweddomains = "";
     public static bool $haveconfig = false;
+    public static string $sitename = "";
     public static function getSystemConfig (){
         $db =dbConn ();
-        $query = $db->query ("SELECT timezone, mainheader, maincontent, icon, alloweddomains FROM {SystemConfig} LIMIT 1");
+
+        $query = $db->query ("SELECT * FROM {SystemConfig} LIMIT 1");
         if ($query->rowCount () == 1){
             $row = $query->fetch();
             self::$timezone = $row["timezone"] == null?"":$row["timezone"];
@@ -28,6 +30,7 @@ class Config {
             self::$maincontent = $row["maincontent"]== null?"":$row["maincontent"];
             self::$icon = $row["icon"]== null?"":$row["icon"];
             self::$alloweddomains = $row["alloweddomains"] == null ? "":$row["alloweddomains"];
+            self::$sitename = $row["sitename"] == null ? "":$row["sitename"];
             self::$haveconfig = true;
         }
         $query->closeCursor ();

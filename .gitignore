@@ -8,3 +8,5 @@ img/old/
 files/
 views/test*
 .env
+modelo_datos_ml.sql
+
