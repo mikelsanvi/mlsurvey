@@ -49,8 +49,8 @@ if ($classview != 'MainView' && file_exists ($classviewfile)){
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<?php include 'include/themehead.php'; ?>
-<title>mlsurvey · Consultas</title>
+<?php include 'include/themehead.php';?>
+<title><?= Config::$sitename != ""?Config::$sitename : "mlsurvey · Consultas"?></title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="description" content="Plataforma de consultas y votaciones." />
 <meta name="color-scheme" content="light dark" />
@@ -89,7 +89,9 @@ $view->addHead ();
                     <!-- Sustituir .ml-brand-mark por <img src="img/logo.svg" alt=""> cuando haya logotipo. -->
                     <a class="navbar-brand" href="index.php">
                         <span class="ml-brand-mark" aria-hidden="true">ml</span>
-                        <span>mlsurvey</span>
+                        <span>
+							<?= Config::$mainheader != ""?Config::$mainheader:"mlsurvey"?>
+						</span>
                     </a>
                 </div>
                 <div class="navbar-collapse collapse ">

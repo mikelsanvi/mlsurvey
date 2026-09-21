@@ -65,9 +65,11 @@ function showView ($view){
 class MainView extends View {
     function show (){
 
-    ?>
-    <h1>Este es el contenido de main</h1>
-    <?php
+    if (Config::$maincontent != "")
+        echo (Config::$maincontent);
+     
+    else
+        echo ("<h1>Este es el contenido de main</h1>\n");
     }
 }
 

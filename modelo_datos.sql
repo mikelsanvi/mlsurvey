@@ -21,11 +21,7 @@ CREATE TABLE Surveys (
 	CONSTRAINT Surveys_Users_C_FK FOREIGN KEY (createdby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT,
 	CONSTRAINT Surveys_Users_M_FK FOREIGN KEY (modifiedby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT,
 )
-WITH SYSTEM VERSIONING
-PARTITION BY SYSTEM_TIME (
-    PARTITION p_history HISTORY,
-    PARTITION p_current CURRENT
-);
+
 
 CREATE TABLE Questions (
 	surveyid INT UNSIGNED NOT NULL,
@@ -55,9 +51,10 @@ CREATE TABLE SystemConfig (
 	configid INT UNSIGNED auto_increment NOT NULL,
 	timezone TEXT NULL,
 	alloweddomains TEXT NULL,
-	mainheader TEXT NULL,
+	mainheader VARCHAR(256) NULL,
 	maincontent TEXT NULL,
 	icon VARCHAR(256) NULL,
+	sitename VARCHAR(256) NULL,
 	CONSTRAINT SystemConfig_PK PRIMARY KEY (configid)
 );
 
@@ -116,7 +113,7 @@ BEFORE UPDATE ON Responses
 FOR EACH ROW
 BEGIN
   SIGNAL SQLSTATE '45000' 
-  SET MESSAGE_TEXT = 'Error: Esta tabla es inmutable. No se permiten modificaciones (UPDATES).';
+  SET MESSAGE_TEXT = 'Error: This table is immutable. Modifications are not allowed. (UPDATES).';
 END$$
 
 
@@ -125,7 +122,7 @@ BEFORE DELETE ON Responses
 FOR EACH ROW
 BEGIN
   SIGNAL SQLSTATE '45000' 
-  SET MESSAGE_TEXT = 'Error: Esta tabla es inmutable. No se permiten eliminaciones (DELETES).';
+  SET MESSAGE_TEXT = 'Error: This table is immutable. Deletions are not allowed. (DELETES).';
 END$$
 
 CREATE TRIGGER Participants_no_update
@@ -133,7 +130,7 @@ BEFORE UPDATE ON Participants
 FOR EACH ROW
 BEGIN
   SIGNAL SQLSTATE '45000' 
-  SET MESSAGE_TEXT = 'Error: Esta tabla es inmutable. No se permiten modificaciones (UPDATES).';
+  SET MESSAGE_TEXT = 'Error: This table is immutable. Modifications are not allowed. (UPDATES).';
 END$$
 
 
@@ -142,7 +139,7 @@ BEFORE DELETE ON Participants
 FOR EACH ROW
 BEGIN
   SIGNAL SQLSTATE '45000' 
-  SET MESSAGE_TEXT = 'Error: Esta tabla es inmutable. No se permiten eliminaciones (DELETES).';
+  SET MESSAGE_TEXT = 'Error: This table is immutable. Deletions are not allowed. (DELETES).';
 END$$
 
 

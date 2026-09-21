@@ -8,6 +8,15 @@ class SystemManage extends View {
 
     private const MANAGEACTION = 'manageaction';
 
+    function addHead (){
+        ?>
+        <script type="text/javascript" src="vendor/hugerte/hugerte/hugerte.min.js" referrerpolicy="origin" crossorigin="anonymous"></script>
+        <!-- Viste el marco del editor con el tema; el JS se ocupa del iframe. -->
+        <link href="css/hugerte-theme.css" rel="stylesheet" />
+        <script src="js/hugerte-theme.js"></script>
+        <?php
+    }
+
     function getMenuGroup (){
         return ML_MENU_GROUP_ADMIN;
     }
@@ -34,7 +43,7 @@ class SystemManage extends View {
 
     private function showSystemManage (){
         echo ('<div class="col-md-8">');
-        $emailconfig = array ();
+        
         if (isset($_REQUEST[self::MANAGEACTION])){
             if ($_REQUEST[self::MANAGEACTION] == "Modificar")
                 $this->modifySystemConfig ();
@@ -52,17 +61,10 @@ class SystemManage extends View {
         $timezonestr = $row['timezone'];
         $alloweddomains = $row['alloweddomains'];
         $_SESSION['configid'] = $row['configid'];
-        $emailconfig['emailfrom'] = $row['emailfrom'];
-        $emailconfig['emailmethod'] = $row['emailmethod'];
-        if (is_null ($emailconfig['emailmethod']))
-            $emailconfig['emailmethod'] = 0;
-        
-        /*$emailconfig['emailcmdparams'] = $row['emailcmdparams'];
-        $emailconfig['emailserver'] = $row['emailserver'];
-        $emailconfig['emailuser'] = $row['emailuser'];
-        $emailconfig['emailpasswd'] = $row['emailpasswd'];
-        $emailconfig['emailsecurity'] = $row['emailsecurity'];
-        $emailconfig['emailport'] = $row['emailport'];*/
+        $sitename = $row["sitename"];
+        $mainheader = $row["mainheader"];
+        $maincontent = $row["maincontent"];
+        $icon = $row["icon"];
         
         $query->closeCursor ();
         $timezoneindex = -1;
@@ -117,28 +119,7 @@ class SystemManage extends View {
                 }
             }
 
-            function validate_smtp (){
-                var smtpelements = {
-                    "emailserver": "Debes configurar la dirección del servidor SMTP",
-                    "emailuser": "Debes configurar el usuario del servidor SMTP",
-                    "emailpasswd": "Debes configurar la clave de acceso del servidor SMTP",
-                    "emailport": "Debes configurar el puerto de acceso del servidor SMTP",
-                };
-                for (var elementid in smtpelements){
-                    var element = document.getElementById (elementid);
-                    if (element.value == ""){
-                        mlDialog.alert (smtpelements[elementid]);
-                        return false;
-                    }
-                }
-
-                if ($("#emailsecurity").val () == 0 ){
-                    mlDialog.alert ("Debes indicar el mecanismo de cifrado para SMTP.");
-                    $("#emailsecurity").select2 ('open');
-                    return false;
-                }
-                return true;
-            }
+            
             /* Igual que en las pantallas de gestión: el diálogo del tema
                es asíncrono, así que cuando hay que preguntar se frena el
                envío y se vuelve a pulsar el botón tras responder. */
@@ -174,28 +155,7 @@ class SystemManage extends View {
 			});
 			return false;
 		}
-                /*var element = document.getElementById ("emailfrom");
-                if (element.value == ""){
-                    mlDialog.alert ("La dirección del remitente no es válida.")
-                    element.focus ({preventScroll: false, focusVisible: true});
-                    return false;
-                }
-
-                var method = $("#emailmethod").val ();
-
-                if (method == <?= MLMailer::SMTP_METHOD ?>){
-                    if (!validate_smtp ())
-                        return false;
-                } 
-                else if (method == <?= MLMailer::SENDMAIL_METHOD ?>){
-                    if (!validate_sendmail ())
-                        return false;
-                }
-                else {
-                    mlDialog.alert ("Debes indicar un método válido para el envío de mensajes.");
-                    $("#emailmethod").select2 ('open');
-                    return false;
-                }*/
+                
 
                 element = document.getElementById ("sendtest");
                 if (element.checked){
@@ -212,19 +172,7 @@ class SystemManage extends View {
             $(document).ready(function() {
                 
                 $(".searchbox").select2();
-                /*var selected = <?= $emailconfig['emailmethod']; ?>;
-                var $emailmethod = $("#emailmethod");
-                $(".nosearchbox").select2 ({
-                    minimumResultsForSearch: Infinity
-                });
-                $emailmethod.on("change", function(e) {
-                    allowedFields ($emailmethod.val ());
-                });
-
-                if (selected != 0){
-                    $("#emailmethod").val (selected);
-                    $("#emailmethod").trigger('change');
-                }*/
+                
 
                 const sendtest = document.getElementById('sendtest');
 
@@ -237,6 +185,12 @@ class SystemManage extends View {
                     rece
                 }*/
                 });
+
+                hugerte.init(mlHugerte.options ({
+                    selector: '.description',
+		            plugins: 'link autolink lists',
+		            toolbar: 'undo redo | styles | bold italic | link | indent outdent | bullist numlist'
+                }));
             });
         </script>
         <h2>Configuración del sistema.</h2>
@@ -259,7 +213,17 @@ class SystemManage extends View {
             <input type="text" id="alloweddomains" name="alloweddomains"
                 value="<?= $alloweddomains; ?>"
                 placeholder="Separados por espacios. Vacío indica sin restricciones."></p>
-            
+            <p><label for="sitename">Nombre del sitio:</label>
+                <input type="text" id="sitename" name="sitename" value="<?= $sitename; ?>">
+            </p>
+            <p><label for="mainheader">Texto cabecera:</label>
+                <input type="text" id="mainheader" name="mainheader" value="<?= $mainheader; ?>">
+            </p>
+            <p><label for="maincontent">Texto principal:</label>
+                <textarea class="description" name="maincontent" id="maincontent">
+                    <?= $maincontent; ?>
+                </textarea>
+            </p>
             <div class="option" id="mailtest" style="display: none;">
                 <p><label for="sendtest">Enviar mensaje de prueba:</label>
                 <input type="checkbox" id="sendtest" name="sendtest"></p>
@@ -282,15 +246,21 @@ class SystemManage extends View {
         $cid = $_SESSION['configid'];
         unset ($_SESSION['configid']);
         $dbconn = dbConn ();
-        $query = $dbconn->prepare ("UPDATE {SystemConfig} set " .
-            "timezone = :timezone, alloweddomains = :domain " .
-            "WHERE configid = :id");
+        $query = $dbconn->prepare ("UPDATE {SystemConfig} SET
+            timezone = :timezone, alloweddomains = :domain,
+            mainheader = :mh, maincontent = :mc, sitename = :sn
+            WHERE configid = :id");
         $query->bindParam (":id", $cid, PDO::PARAM_INT);
         $query->bindParam (":timezone", $timezones[$_REQUEST['timezone']],
             PDO::PARAM_STR);
         $query->bindParam (":domain", $_REQUEST['alloweddomains'],
             PDO::PARAM_STR);
-        
+        $query->bindParam (":mh", $_REQUEST['mainheader'],
+            PDO::PARAM_STR);
+        $query->bindParam (":mc", $_REQUEST['maincontent'],
+            PDO::PARAM_STR);
+        $query->bindParam (":sn", $_REQUEST['sitename'],
+            PDO::PARAM_STR);
 
         $query->execute ();
 
