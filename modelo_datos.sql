@@ -19,9 +19,9 @@ CREATE TABLE Surveys (
 	modifiedby INT UNSIGNED NOT NULL,
 	CONSTRAINT Surveys_PK PRIMARY KEY (surveyid),
 	CONSTRAINT Surveys_Users_C_FK FOREIGN KEY (createdby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT,
-	CONSTRAINT Surveys_Users_M_FK FOREIGN KEY (modifiedby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT
-)
+        CONSTRAINT Surveys_Users_M_FK FOREIGN KEY (modifiedby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT
 
+);
 
 CREATE TABLE Questions (
 	surveyid INT UNSIGNED NOT NULL,
@@ -55,7 +55,6 @@ CREATE TABLE SystemConfig (
 	maincontent TEXT NULL,
 	icon VARCHAR(256) NULL,
 	sitename VARCHAR(256) NULL,
-  sitename VARCHAR(256) NULL,
 	facebook VARCHAR(256) NULL,
 	twitter VARCHAR(256) NULL,
 	linkedin VARCHAR(256) NULL,
@@ -63,7 +62,7 @@ CREATE TABLE SystemConfig (
 	googleplus VARCHAR(256) NULL,
 	mastodon VARCHAR(256) NULL,
 	bluesky VARCHAR(256) NULL,
-	telegram VARCHAR(256) NULL
+	telegram VARCHAR(256) NULL,
 	CONSTRAINT SystemConfig_PK PRIMARY KEY (configid)
 );
 
@@ -102,7 +101,7 @@ CREATE TABLE Responses (
 	responsedate DATETIME NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
 	CONSTRAINT Responses_PK PRIMARY KEY (responseid),
 	/*Don't allow to delete/modify an ended survey*/
-	CONSTRAINT Responses_Surveys_FK FOREIGN KEY (surveyid) REFERENCES Surveys(surveyid) ON DELETE RESTRICT ON UPDATE RESTRICT	
+	CONSTRAINT Responses_Surveys_FK FOREIGN KEY (surveyid) REFERENCES Surveys(surveyid) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 /*CREATE INDEX Responses_participant_IDX USING BTREE ON Responses (participant);
 CREATE INDEX Responses_survey_date_IDX USING BTREE ON Responses (surveyid, responsedate);*/
@@ -113,7 +112,7 @@ CREATE TABLE Results (
 	ispartial BOOL NULL,
 	resultsdate DATETIME NOT NULL DEFAULT current_timestamp ON UPDATE current_timestamp,
 	CONSTRAINT Results_PK PRIMARY KEY (surveyid),
-	CONSTRAINT Results_Surveys_FK FOREIGN KEY (surveyid) REFERENCES Surveys(surveyid) ON DELETE RESTRICT ON UPDATE RESTRICT	
+	CONSTRAINT Results_Surveys_FK FOREIGN KEY (surveyid) REFERENCES Surveys(surveyid) ON DELETE RESTRICT ON UPDATE RESTRICT
 );
 
 DELIMITER $$

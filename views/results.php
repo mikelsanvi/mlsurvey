@@ -114,7 +114,7 @@ class Results extends View {
                         $elclass = self::RESULTS_COLORS[($optionid + $slots - 1) % $slots];
                         ?>
                         <p>
-                        <label for="<?= $elid; ?>"><?= $option['optiondesc'] ?>: <?= 
+                        <label for="<?= $elid; ?>"><strong><?= $option['optiondesc'] ?></strong>: <?= 
                          $optionres?> votos</label>
                          <progress class="<?= $elclass ?>" id="<?= $elid; ?>" 
                          value="<?= $pctres; ?>" max="1"> <?= $pctres; ?>% </progress>

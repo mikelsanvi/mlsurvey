@@ -147,7 +147,7 @@ class GetCode extends View {
 
             $code = random_bytes (32);
             
-            if ($this->checkParticipation ($db, $participant)){
+            if ($this->checkParticipation ($db, $participant, $surveyid)){
                 return;
             }
             $passwd = hash ('sha256', $code);
