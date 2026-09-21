@@ -15,11 +15,11 @@ CREATE TABLE Surveys (
 	startdate DATETIME NOT NULL,
 	enddate DATETIME NOT NULL,
 	created DATETIME DEFAULT current_timestamp NOT NULL,
-	createdby INT NOT NULL,
-	modifiedby INT NOT NULL,
+	createdby INT UNSIGNED NOT NULL,
+	modifiedby INT UNSIGNED NOT NULL,
 	CONSTRAINT Surveys_PK PRIMARY KEY (surveyid),
 	CONSTRAINT Surveys_Users_C_FK FOREIGN KEY (createdby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT,
-	CONSTRAINT Surveys_Users_M_FK FOREIGN KEY (modifiedby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT,
+	CONSTRAINT Surveys_Users_M_FK FOREIGN KEY (modifiedby) REFERENCES Users(userid) ON DELETE RESTRICT ON UPDATE RESTRICT
 )
 
 
@@ -55,6 +55,15 @@ CREATE TABLE SystemConfig (
 	maincontent TEXT NULL,
 	icon VARCHAR(256) NULL,
 	sitename VARCHAR(256) NULL,
+  sitename VARCHAR(256) NULL,
+	facebook VARCHAR(256) NULL,
+	twitter VARCHAR(256) NULL,
+	linkedin VARCHAR(256) NULL,
+	pinterest VARCHAR(256) NULL,
+	googleplus VARCHAR(256) NULL,
+	mastodon VARCHAR(256) NULL,
+	bluesky VARCHAR(256) NULL,
+	telegram VARCHAR(256) NULL
 	CONSTRAINT SystemConfig_PK PRIMARY KEY (configid)
 );
 

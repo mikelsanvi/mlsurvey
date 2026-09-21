@@ -19,8 +19,9 @@ class Config {
     public static string $sitename = "";
     public static function getSystemConfig (){
         $db =dbConn ();
+
         $query = $db->query ("SELECT * FROM {SystemConfig} LIMIT 1");
-        if ($query->rowCount () == 1){}{
+        if ($query->rowCount () == 1){
             $row = $query->fetch();
             self::$timezone = $row["timezone"] == null?"":$row["timezone"];
             if (!empty (self::$timezone))
