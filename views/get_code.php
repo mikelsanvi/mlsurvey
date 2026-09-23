@@ -5,6 +5,7 @@ require_once 'views/surveys.php';
 require_once 'include/mlmailer.php';
 require_once 'utils/participation.php';
 require_once 'utils/token.php';
+require_once 'utils/altcha.php';
 require_once 'utils/showsurvey.php';
 require_once 'utils/crypt.php';
 
@@ -20,13 +21,22 @@ class GetCode extends View {
         ?>
         <link href="css/button3.css" rel="stylesheet" />
         <link href="css/questions.css" rel="stylesheet" />
+        <?= altchaStyleHTML (); ?>
         <?php
+    }
+
+    public function addHead (){
+        echo (altchaScriptHTML ());
     }
 
     public function show (){
         if (isset ($_REQUEST[self::ACTION])){
             if (!checkToken ()){
                 tokenError ();
+                return;
+            }
+            if (!altchaCheck ()){
+                altchaError ();
                 return;
             }
             $this->generateCode ();
@@ -70,6 +80,7 @@ class GetCode extends View {
                     <div class="ml-participate-row">
                         <input type="email" name="email" id="email" required
                             placeholder="nombre@dominio.es" autocomplete="email">
+                        <?= altchaWidgetHTML (); ?>
                         <button type="submit" class="button-3 ml-participate-btn"
                             name="<?= self::ACTION; ?>" value="<?= self::ACTION; ?>">
                             Participar en la consulta</button>

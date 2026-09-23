@@ -161,8 +161,9 @@ $view->addHead ();
 							<span>Powered by: <a href="https://github.com/pacoandres/mlsurvey" target="_blank">mlsurvey</a></span>
 						</p>
 						<p>
-							<span>Special thanks to: <a href="https://github.com/PHPMailer/PHPMailer" target="_blank">PHPMailer</a>
-						and <a href="https://github.com/hugerte/hugerte" target="_blank">HugeRTE</a></span>
+							<span>Special thanks to: <a href="https://github.com/PHPMailer/PHPMailer" target="_blank">PHPMailer</a>,
+						<a href="https://github.com/hugerte/hugerte" target="_blank">HugeRTE</a>
+						and <a href="https://github.com/altcha-org/altcha" target="_blank">ALTCHA</a></span>
 						</p>
 					</div>
 				</div>

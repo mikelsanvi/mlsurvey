@@ -4,6 +4,10 @@ This is not a complete README.
 Notice that this project needs PHPMailer for working. See composer files.
 Also needs HugeRTE (look language installation)
 
+The participation request form is protected with [ALTCHA](https://altcha.org/), a
+proof of work captcha that needs no external service: the widget is served from
+`js/altcha/` and the challenges are generated and checked by `utils/altcha.php`.
+
 ## Running the application with Docker Compose
 
 The repository ships a `Dockerfile` (PHP 8.3 + Apache) and a `docker-compose.yml` that
@@ -51,6 +55,8 @@ the database to be ready before serving requests.
 | `DB_PREFIX` | *(empty)* | Optional prefix for table names. |
 | `PROXY_PATH`, `PROXY_PORT` | *(empty)* | Only needed when the application sits behind a reverse proxy on a subdirectory or a different port. |
 | `LOG_LEVEL` | `0` | Log level: `0` error, `1` warning, `2` info, `3` debug. Use `0` in production. |
+| `ALTCHA_ENABLED` | `true` | ALTCHA captcha on the participation request form. Set it to `false` when the site is served over plain HTTP: the proof of work needs Web Crypto, only available on secure contexts (HTTPS or `localhost`). |
+| `ALTCHA_HMAC_KEY` | *(empty)* | Key used to sign the captcha challenges. When empty, a key is generated for each session. |
 | `ADMIN_USER`, `ADMIN_PASSWORD` | `admin` / `admin` | Initial administrator; created on startup if it does not exist yet. |
 
 The entrypoint generates `config/config.php` from these variables on every start. If you
