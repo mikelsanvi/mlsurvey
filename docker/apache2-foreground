@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+# Arranca Apache en primer plano como PID 1 (recibe el SIGTERM de docker stop).
+# apache2ctl no sirve: no hace exec y la señal no le llega a Apache.
+. /etc/apache2/envvars
+
+mkdir -p "$APACHE_RUN_DIR" "$APACHE_LOCK_DIR"
+# Un pid de un arranque anterior impide volver a arrancar el contenedor.
+rm -f "$APACHE_PID_FILE"
+
+exec apache2 -DFOREGROUND "$@"

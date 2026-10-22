@@ -152,7 +152,7 @@ These are the steps for doing it with postfix (maybe you need to change users, a
 
 ## Running the application with Docker Compose
 
-The repository ships a `Dockerfile` (PHP 8.3 + Apache) and a `docker-compose.yml` that
+The repository ships a `Dockerfile` (Ubuntu 26.04 with PHP 8.5 + Apache, as in production) and a `docker-compose.yml` that
 brings up two services: `web` (the application) and `db` (MariaDB 11.4). The image
 installs the dependencies mentioned above (PHPMailer and HugeRTE) on its own, so there is
 no need to run `composer` by hand.
