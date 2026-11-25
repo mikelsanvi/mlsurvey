@@ -37,14 +37,18 @@ if [ ! -f "$SSL_DIR/server.crt" ] || [ ! -f "$SSL_DIR/server.key" ]; then
     chmod 600 "$SSL_DIR/server.key"
 fi
 # La lista de CA cambia de vez en cuando: para regenerarla, borra el fichero y
-# reinicia, o ejecuta buildclientca.php y "apache2ctl graceful".
-if [ ! -s "$SSL_DIR/client_ca.pem" ]; then
+# reinicia, o ejecuta buildclientca.php y "apache2ctl graceful". Escribe tambien
+# client_ca_tsl.pem (las CA de la TSL, ver utils/clientcert.php): si falta, se
+# regeneran los dos.
+if [ ! -s "$SSL_DIR/client_ca.pem" ] || [ ! -s "$SSL_DIR/client_ca_tsl.pem" ]; then
     echo "[mlsurvey] generando las CA admitidas desde la TSL (tarda unos segundos)."
     if ! ( cd "$APP_DIR" && php buildclientca.php "$SSL_DIR/client_ca.pem" "" ${CLIENT_CA_EXTRA:+"$CLIENT_CA_EXTRA"} ); then
         # Sin fichero Apache no arranca: provisionalmente, las CA del sistema.
         echo "[mlsurvey] AVISO: no se ha podido descargar la TSL; el registro no aceptara" \
             "certificados espanoles hasta regenerar $SSL_DIR/client_ca.pem."
+        # Sin marcas [TSL]: la aplicacion no confia en ninguna sin raiz.
         cp /etc/ssl/certs/ca-certificates.crt "$SSL_DIR/client_ca.pem"
+        cp /etc/ssl/certs/ca-certificates.crt "$SSL_DIR/client_ca_tsl.pem"
     fi
 fi
 
@@ -100,6 +104,7 @@ define('CONFIG', [
 "client_cert_enabled" => getenv('CLIENT_CERT_ENABLED') === 'false' ? false : true,
 "client_cert_verify_var" => getenv('CLIENT_CERT_VERIFY_VAR') ?: 'SSL_CLIENT_VERIFY',
 "client_cert_var" => getenv('CLIENT_CERT_VAR') ?: 'SSL_CLIENT_CERT',
+"client_ca_file" => '/etc/ssl/mlsurvey/client_ca_tsl.pem',
 
 "ml_stresstest" => false,
 // Por defecto sin restringir, como en config.php.sample.

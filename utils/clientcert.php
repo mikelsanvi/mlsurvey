@@ -15,6 +15,17 @@
  * client_cert_verify_var ("SUCCESS" if verified) and client_cert_var (the
  * certificate in PEM, or URL-encoded PEM as nginx's $ssl_client_escaped_cert).
  * By default the ones of Apache mod_ssl (SSLOptions +StdEnvVars +ExportCertData).
+ *
+ * Some qualified CAs of the TSL (Bewor Tech and the rest hosted by Uanataca,
+ * Validated ID, CATCert...) have a root published nowhere, so the web server
+ * can't reach a root and doesn't give SUCCESS but GENEROUS (Apache with
+ * optional_no_ca) or FAILED:unable to get local issuer certificate. Then the
+ * certificate is accepted if one of the CAs of the TSL itself (marked "# [TSL]"
+ * by buildclientca.php in client_ca_file, output_tsl.pem) signed it: eIDAS
+ * takes the CA of the TSL as the trust anchor, not its root. Any other failure
+ * is rejected. The web server must not have those CAs as trusted ones
+ * (SSLCACertificateFile), as OpenSSL would abort the handshake, but must ask
+ * the browser for them (SSLCADNRequestFile).
  */
 require_once 'include/config.php';
 require_once 'utils/logger.php';
@@ -119,6 +130,50 @@ function mustGoToCertHost (): bool {
 }
 
 /**
+ * Results of the web server whose only problem is that it found no root for
+ * the chain: buildclientca.php couldn't get it. GENEROUS is the one of Apache
+ * with optional_no_ca; the rest, OpenSSL's messages (nginx, older Apache).
+ */
+const CLIENT_CERT_NO_ROOT = '/^(?:GENEROUS|FAILED:\s*(?:unable to get (?:local )?issuer certificate|' .
+    'unable to verify the first certificate|self[- ]signed certificate in certificate chain))$/i';
+
+/**
+ * true if one of the CAs of the TSL of client_ca_file, valid now, signed the
+ * certificate $pem ($cert as openssl_x509_parse returns it) and it can be used
+ * for TLS client authentication, as OpenSSL requires when it verifies the
+ * whole chain.
+ */
+function clientCertSignedByTslCa (string $pem, array $cert): bool {
+    $file = Config::PARAMS["client_ca_file"] ?? "/etc/ssl/mlsurvey/client_ca_tsl.pem";
+    $data = @file_get_contents ($file);
+    if ($data === false){
+        logMessage (LOGGER_ERROR, "Can't read client_ca_file ({$file}).");
+        return false;
+    }
+    $eku = $cert['extensions']['extendedKeyUsage'] ?? null;
+    $ku = $cert['extensions']['keyUsage'] ?? null;
+    if (($eku !== null && !str_contains ($eku, "TLS Web Client Authentication") &&
+            !str_contains ($eku, "Any Extended Key Usage")) ||
+            ($ku !== null && !str_contains ($ku, "Digital Signature")))
+        return false;
+    preg_match_all ('/^# \[TSL\][^\n]*\n(-----BEGIN CERTIFICATE-----.+?-----END CERTIFICATE-----)/ms',
+        $data, $m);
+    if (empty ($m[1]))
+        logMessage (LOGGER_ERROR, "No CA marked [TSL] in {$file}: regenerate it with buildclientca.php.");
+    $now = time ();
+    foreach ($m[1] as $ca){
+        $info = openssl_x509_parse ($ca);
+        if ($info === false || $info['subject'] != ($cert['issuer'] ?? null) ||
+                $now < $info['validFrom_time_t'] || $now > $info['validTo_time_t'])
+            continue;
+        $key = openssl_pkey_get_public ($ca);
+        if ($key !== false && openssl_x509_verify ($pem, $key) === 1)
+            return true;
+    }
+    return false;
+}
+
+/**
  * Value of a server variable. With an internal redirect (the rewrite of
  * .htaccess) Apache may only keep it with the REDIRECT_ prefix.
  */
@@ -156,10 +211,12 @@ function getClientCertDni (): string {
             "conectados): sigue los pasos de abajo. Si te apareció y la cancelaste, cierra " .
             "todas las ventanas del navegador y vuelve a entrar.");
     }
-    if ($verify !== "SUCCESS"){
+    $invalid = "Tu certificado electrónico no es válido, ha caducado o no es un certificado " .
+        "cualificado de un prestador de confianza.";
+    $noroot = $verify !== "SUCCESS" && preg_match (CLIENT_CERT_NO_ROOT, $verify);
+    if ($verify !== "SUCCESS" && !$noroot){
         logMessage (LOGGER_WARN, "Client certificate rejected by the server: {$verify}.");
-        throw new ClientCertException ("Tu certificado electrónico no es válido, ha caducado o no " .
-            "es un certificado cualificado de un prestador de confianza.");
+        throw new ClientCertException ($invalid);
     }
     /* El PEM no lleva %: si lo hay, viene URL-encoded. */
     if (str_contains ($pem, "%"))
@@ -168,6 +225,11 @@ function getClientCertDni (): string {
     if ($cert === false){
         logMessage (LOGGER_ERROR, "Can't parse the client certificate in {$certvar}.");
         throw new ClientCertException ("No se ha podido leer tu certificado digital.");
+    }
+    /* Sin raíz para la cadena: tiene que haberlo firmado una CA de la TSL. */
+    if ($noroot && !clientCertSignedByTslCa ($pem, $cert)){
+        logMessage (LOGGER_WARN, "Client certificate not signed by a CA of the TSL ({$verify}).");
+        throw new ClientCertException ($invalid);
     }
     /* El servidor ya lo ha comprobado; por si acaso. */
     $now = time ();

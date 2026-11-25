@@ -109,8 +109,11 @@ Every configuration item has a description, you only need to notice:
       ServerName registro.example.org
       DocumentRoot /var/www/mlsurvey
       # ... SSLEngine, server certificate ...
-      # The CAs accepted, made by buildclientca.php (see below).
+      # The CAs accepted, made by buildclientca.php (see below): the ones with a
+      # chain up to a root, verified by Apache...
       SSLCACertificateFile /etc/ssl/mlsurvey/client_ca.pem
+      # ...and every CA of the TSL, asked to the browser.
+      SSLCADNRequestFile /etc/ssl/mlsurvey/client_ca_tsl.pem
       SSLVerifyClient optional_no_ca
       SSLVerifyDepth 4
       SSLOptions +StdEnvVars +ExportCertData
@@ -118,7 +121,14 @@ Every configuration item has a description, you only need to notice:
   ```
   `optional_no_ca` lets an expired certificate or one of another CA through as `FAILED`, so
   the application explains the reason instead of the browser showing a TLS error; only
-  `SUCCESS` is accepted. Asking for it only in some paths of the main site (`<Location>`)
+  `SUCCESS` is accepted, except when the server only failed to find a root for the chain
+  (`GENEROUS`, `FAILED:unable to get local issuer certificate`...): some qualified CAs of
+  the TSL (Bewor Tech and the rest hosted by Uanataca, Validated ID, CATCert, Defensa...)
+  have a root published nowhere. Then the application accepts the certificate if one of the
+  CAs of the TSL itself, marked `# [TSL]` in `client_ca_file` (default
+  `/etc/ssl/mlsurvey/client_ca_tsl.pem`, readable by PHP), signed it. Those CAs can't
+  be in `SSLCACertificateFile`: without their root OpenSSL aborts the handshake
+  (`unable to get issuer certificate`) even with `optional_no_ca`. Asking for it only in some paths of the main site (`<Location>`)
   doesn't work: it needs TLS renegotiation, which TLS 1.3 and HTTP/2 don't support. Behind a TLS proxy, set `client_cert_verify_var` and `client_cert_var` to
   the headers where it passes the result and the certificate (e.g.
   `HTTP_X_SSL_CLIENT_VERIFY` and `HTTP_X_SSL_CLIENT_CERT`), and make sure the proxy always
@@ -134,7 +144,9 @@ Every configuration item has a description, you only need to notice:
   `buildclientca.php` makes the CA file from the Spanish Trusted List (TSL,
   `https://tsl.digital.gob.es/TSL.xml`): the qualified CAs for electronic signatures in
   force, with the subordinate CAs of the DNIe root and the issuers needed up to the roots
-  (taken from the TSL, the CAs of the system or their AIA). Run it regularly, as the TSL
+  (taken from the TSL, the CAs of the system or their AIA). It writes two files:
+  `client_ca.pem`, the CAs with a chain up to a root, and `client_ca_tsl.pem`, every CA
+  of the TSL itself. Run it regularly, as the TSL
   changes, and reload the web server:
   ```sh
   php buildclientca.php /etc/ssl/mlsurvey/client_ca.pem && systemctl reload apache2

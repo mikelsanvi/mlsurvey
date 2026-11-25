@@ -89,10 +89,17 @@ const CONFIG = [
  * HTTP_X_SSL_CLIENT_CERT (PEM or URL-encoded PEM): the proxy must always
  * overwrite them, or anyone could send their own.
  * client_cert_enabled: set it to false only for development.
+ * client_ca_file: the CAs of the TSL, the _tsl.pem file made by
+ * buildclientca.php (the one of SSLCADNRequestFile). Some of them (Bewor Tech,
+ * Uanataca, Validated ID...) have no root to be found, so the server can't
+ * verify their chain (GENEROUS or FAILED:unable to get local issuer
+ * certificate): the application then accepts the certificate if a CA of this
+ * file signed it. It must be readable by PHP.
  */
 "client_cert_enabled" => true,
 "client_cert_verify_var" => "SSL_CLIENT_VERIFY",
 "client_cert_var" => "SSL_CLIENT_CERT",
+"client_ca_file" => "/etc/ssl/mlsurvey/client_ca_tsl.pem",
 
 /**
  * For enabling stress test bypasses

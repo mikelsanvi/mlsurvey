@@ -19,10 +19,25 @@
  * optional file of extra CAs and, if not there, downloaded from their
  * Authority Information Access.
  *
+ * Some providers (Uanataca and the ones it hosts, as Bewor Tech, Validated
+ * ID, CATCert, Defensa...) don't publish their root anywhere it can be found.
+ * A CA without its root can't go in output.pem: OpenSSL then aborts the TLS
+ * handshake ("unable to get issuer certificate"), even with optional_no_ca.
+ * So two files are written:
+ * - output.pem (SSLCACertificateFile): the CAs whose chain reaches a root,
+ *   which the web server verifies (SUCCESS).
+ * - output_tsl.pem (SSLCADNRequestFile and client_ca_file): every CA of the
+ *   TSL itself (the services and the subordinates of a root service), marked
+ *   "# [TSL]". The web server asks the browser for certificates of these CAs,
+ *   and for the ones without a root (GENEROUS or FAILED:unable to get local
+ *   issuer certificate) utils/clientcert.php checks that one of them signed
+ *   the certificate, as eIDAS takes the CA of the TSL as the trust anchor.
+ *
  * The TSL changes when a provider gets or loses its qualification: run it
  * regularly (e.g. monthly from cron) and reload the web server.
  *
  * Usage: php buildclientca.php output.pem [TSL URL or file] [extra CAs PEM file]
+ * (writes output.pem and output_tsl.pem)
  */
 
 const TSL_URL = "https://tsl.digital.gob.es/TSL.xml";
@@ -42,6 +57,7 @@ if ($argc < 2){
     exit (1);
 }
 $output = $argv[1];
+$outputtsl = preg_replace ('/(\.pem)?$/', '_tsl.pem', $output, 1);
 $source = ($argv[2] ?? "") !== "" ? $argv[2] : TSL_URL;
 $extra = $argv[3] ?? null;
 /* Posibles emisores: [sujeto, PEM] de los certificados de la TSL, del
@@ -144,6 +160,8 @@ try {
     }
 
     $certs = [];   // huella => [nombre, PEM]
+    $tsl = [];     // huellas de las CA de la propia TSL
+    $parent = [];  // huella => huella del emisor, "self" si es raíz, null si no se encuentra
     $missing = [];
     $services = $xpath->query ("//t:TSPService/t:ServiceInformation[" .
         "t:ServiceTypeIdentifier = '" . TSL_CAQC . "' and t:ServiceStatus = '" . TSL_GRANTED . "' and " .
@@ -184,6 +202,8 @@ try {
                     }
             }
         }
+        foreach ($pems as $pem)
+            $tsl[openssl_x509_fingerprint ($pem, "sha256")] = true;
         foreach ($pems as $pem){
             /* La CA y sus emisores hasta la raíz. */
             for ($depth = 0; $pem !== null && $depth <= CHAIN_MAX_DEPTH; $depth++){
@@ -192,11 +212,14 @@ try {
                     break;
                 $info = openssl_x509_parse ($pem);
                 $certs[$fingerprint] = [$info['name'], $pem];
-                if (isSelfSigned ($pem))
+                if (isSelfSigned ($pem)){
+                    $parent[$fingerprint] = "self";
                     break;
+                }
                 $issuer = issuerOf ($pem);
                 if ($issuer === null)
                     $missing[] = $info['name'];
+                $parent[$fingerprint] = $issuer === null ? null : openssl_x509_fingerprint ($issuer, "sha256");
                 $pem = $issuer;
             }
         }
@@ -205,23 +228,54 @@ try {
         throw new Exception ("No se ha encontrado ninguna CA en la TSL");
 
     $now = time ();
-    $out = "# CA admitidas para el certificado digital del registro.\n" .
-        "# Generado por buildclientca.php a partir de {$source} el " . date ("Y-m-d") . ".\n";
-    $count = 0;
-    foreach ($certs as [$name, $pem]){
-        $info = openssl_x509_parse ($pem);
-        if ($info['validTo_time_t'] < $now)
+    $valid = fn ($fingerprint) => openssl_x509_parse ($certs[$fingerprint][1])['validTo_time_t'] >= $now;
+    /* true si la cadena llega a una raíz, sin certificados caducados. */
+    $complete = function ($fingerprint) use ($parent, $valid){
+        for ($depth = 0; $depth <= CHAIN_MAX_DEPTH + 1; $depth++){
+            if (!$valid ($fingerprint))
+                return false;
+            $next = $parent[$fingerprint] ?? null;
+            if ($next === "self")
+                return true;
+            if ($next === null)
+                return false;
+            $fingerprint = $next;
+        }
+        return false;
+    };
+    $header = "# Generado por buildclientca.php a partir de {$source} el " . date ("Y-m-d") . ".\n";
+    $out = "# CA con cadena hasta la raíz, que verifica el servidor web (SSLCACertificateFile).\n" .
+        $header;
+    $outtsl = "# CA de la TSL: las que se piden al navegador (SSLCADNRequestFile) y en las que\n" .
+        "# confía utils/clientcert.php (client_ca_file) cuando no hay raíz.\n" . $header;
+    $count = $counttsl = 0;
+    $unchained = [];
+    foreach ($certs as $fingerprint => [$name, $pem]){
+        if (!$valid ($fingerprint))
             continue;
-        $out .= "\n# {$name}\n{$pem}";
-        $count++;
+        $istsl = isset ($tsl[$fingerprint]);
+        if ($complete ($fingerprint)){
+            $out .= "\n# " . ($istsl ? "[TSL] " : "") . "{$name}\n{$pem}";
+            $count++;
+        } elseif ($istsl)
+            $unchained[] = $name;
+        if ($istsl){
+            $outtsl .= "\n# [TSL] {$name}\n{$pem}";
+            $counttsl++;
+        }
     }
-    $tmp = $output . ".tmp";
-    if (file_put_contents ($tmp, $out) === false || !rename ($tmp, $output))
-        throw new Exception ("No se ha podido escribir {$output}");
-    echo "{$count} certificados de CA escritos en {$output}\n";
+    foreach ([$output => $out, $outputtsl => $outtsl] as $file => $data){
+        $tmp = $file . ".tmp";
+        if (file_put_contents ($tmp, $data) === false || !rename ($tmp, $file))
+            throw new Exception ("No se ha podido escribir {$file}");
+    }
+    echo "{$count} certificados de CA con cadena hasta la raíz escritos en {$output}\n";
+    echo "{$counttsl} CA de la TSL escritas en {$outputtsl}\n";
     foreach (array_unique ($missing) as $name)
-        fwrite (STDERR, "AVISO: no se ha encontrado el emisor de {$name}: descarga su CA raíz de la " .
-            "web del prestador y pásala en el tercer argumento.\n");
+        fwrite (STDERR, "AVISO: no se ha encontrado el emisor de {$name}.\n");
+    foreach ($unchained as $name)
+        fwrite (STDERR, "AVISO: sin raíz para {$name}: sus certificados los verifica la aplicación " .
+            "(client_ca_file). Si encuentras su CA raíz, pásala en el tercer argumento.\n");
 } catch (Exception $e) {
     fwrite (STDERR, "Error: {$e->getMessage()}\n");
     exit (1);
